@@ -1,14 +1,18 @@
 import { analyzeNutrients, RDI, calculateProteinGoal } from './logic/analyzer.js';
-import { getCustomFoods, saveCustomFood, saveCustomFoods, deleteCustomFood, updateCustomFood } from './logic/customStore.js';
+import { getCloudCustomFoods, saveCloudCustomFood, saveCloudCustomFoodsBulk, deleteCloudCustomFood, updateCloudCustomFood, getCloudLog, saveCloudLog } from './logic/db.js';
+import { setupAuthListeners, loginUser, registerUser, logoutUser } from './logic/auth.js';
 import { parseNutrientText, parseTSVProducts } from './logic/parser.js';
+import { foods } from './data/foods.js';
 import Chart from 'chart.js/auto';
 
 // State
 let state = {
   weight: 75,
   log: [],
-  charts: {}
+  charts: {},
+  customFoods: []
 };
+let currentUser = null;
 
 // DOM Elements
 const selectors = {
@@ -30,7 +34,17 @@ const selectors = {
   navDashboardBtn: document.getElementById('nav-dashboard-btn'),
   navDatabaseBtn: document.getElementById('nav-database-btn'),
   dashboardView: document.getElementById('dashboard-view'),
-  databaseView: document.getElementById('database-view')
+  databaseView: document.getElementById('database-view'),
+  // Auth Selectors
+  authOverlay: document.getElementById('auth-overlay'),
+  appContainer: document.getElementById('app'),
+  authEmail: document.getElementById('auth-email'),
+  authPassword: document.getElementById('auth-password'),
+  authError: document.getElementById('auth-error'),
+  btnLogin: document.getElementById('btn-login'),
+  btnRegister: document.getElementById('btn-register'),
+  btnGuest: document.getElementById('btn-guest'),
+  btnLogout: document.getElementById('btn-logout')
 };
 
 // UI Elements for Custom Form
@@ -50,12 +64,31 @@ const customInputs = {
 
 // Initialize app
 function init() {
-  renderFoodList();
   initCharts();
   setupEventListeners();
-  loadState();
-  updateUI();
-  switchView('dashboard');
+  loadState(); // load local weight
+  
+  setupAuthListeners(async (user) => {
+    // Logged In
+    currentUser = user;
+    selectors.authOverlay.classList.add('hidden');
+    selectors.appContainer.classList.remove('hidden');
+    
+    // Fetch data from Cloud
+    state.customFoods = await getCloudCustomFoods(user.uid);
+    state.log = await getCloudLog(user.uid);
+    
+    renderFoodList();
+    updateUI();
+    switchView('dashboard');
+  }, () => {
+    // Logged Out
+    currentUser = null;
+    selectors.authOverlay.classList.remove('hidden');
+    selectors.appContainer.classList.add('hidden');
+    state.log = [];
+    state.customFoods = [];
+  });
 }
 
 function switchView(view) {
@@ -84,25 +117,28 @@ function switchView(view) {
 }
 
 function loadState() {
-  const saved = localStorage.getItem('veganAnalyzerState');
+  const saved = localStorage.getItem('veganAnalyzerSettings');
   if (saved) {
     const parsed = JSON.parse(saved);
     state.weight = parsed.weight || 75;
-    state.log = parsed.log || [];
     selectors.weightInput.value = state.weight;
-    updateUI();
   }
 }
 
-function saveState() {
-  localStorage.setItem('veganAnalyzerState', JSON.stringify({
-    weight: state.weight,
-    log: state.log
+async function saveState() {
+  // Save settings locally
+  localStorage.setItem('veganAnalyzerSettings', JSON.stringify({
+    weight: state.weight
   }));
+  
+  // Save logbook to cloud
+  if (currentUser) {
+    await saveCloudLog(currentUser.uid, state.log);
+  }
 }
 
 function renderFoodList(searchTerm = '') {
-  const allFoods = getCustomFoods();
+  const allFoods = [...foods, ...state.customFoods];
   allFoods.sort((a, b) => a.name.localeCompare(b.name));
   
   selectors.foodList.innerHTML = '';
@@ -117,15 +153,13 @@ function renderFoodList(searchTerm = '') {
     
     li.innerHTML = `
       <div class="flex items-center flex-1 min-w-0">
-        <input type="checkbox" class="food-checkbox w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 rounded focus:ring-emerald-500 flex-shrink-0" data-id="${food.id}">
+        <input type="checkbox" class="food-checkbox w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 rounded focus:ring-emerald-500 flex-shrink-0 cursor-pointer" data-id="${food.id}">
         <div class="ml-2 flex items-center gap-2 min-w-0">
           <span class="text-xs font-medium truncate text-slate-200">${food.name}</span>
           ${food.isDefault ? '' : '<span class="text-[9px] text-emerald-500 uppercase tracking-tighter flex-shrink-0">Eigen</span>'}
         </div>
       </div>
       <div class="flex items-center gap-1 flex-shrink-0">
-        <input type="number" class="food-amount w-14 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-[10px] text-center focus:ring-1 focus:ring-emerald-500 outline-none hidden" placeholder="${food.unit === 'g' || food.unit === 'ml' ? '100' : '1'}" data-unit="${food.unit}">
-        <span class="text-[10px] text-slate-500 hidden amount-unit">${food.unit}</span>
         <button class="edit-btn p-1 text-slate-400 hover:text-amber-400 rounded transition-colors" title="Bewerk" data-id="${food.id}">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 Z"/></svg>
         </button>
@@ -135,27 +169,20 @@ function renderFoodList(searchTerm = '') {
       </div>
     `;
 
-    // Show amount input when checkbox is checked
     const checkbox = li.querySelector('.food-checkbox');
-    const amountInput = li.querySelector('.food-amount');
-    const amountUnit = li.querySelector('.amount-unit');
-    
     checkbox.addEventListener('change', () => {
-      if (checkbox.checked) {
-        amountInput.classList.remove('hidden');
-        amountUnit.classList.remove('hidden');
-        amountInput.focus();
-      } else {
-        amountInput.classList.add('hidden');
-        amountUnit.classList.add('hidden');
-      }
       updateAddSelectedButton();
     });
 
     // Actions for all items
-    li.querySelector('.delete-btn').addEventListener('click', (e) => {
-      if (confirm('Product verwijderen?')) {
-        deleteCustomFood(food.id);
+    li.querySelector('.delete-btn').addEventListener('click', async (e) => {
+      if (food.isDefault) {
+        alert('Je kunt de standaard database producten niet verwijderen.');
+        return;
+      }
+      if (confirm('Eigen product verwijderen?')) {
+        await deleteCloudCustomFood(currentUser.uid, food.id);
+        state.customFoods = state.customFoods.filter(f => f.id !== food.id);
         renderFoodList(selectors.foodSearch.value);
       }
     });
@@ -212,6 +239,45 @@ function resetEditForm() {
 }
 
 function setupEventListeners() {
+  selectors.btnLogin.addEventListener('click', async () => {
+    const email = selectors.authEmail.value;
+    const password = selectors.authPassword.value;
+    const { error } = await loginUser(email, password);
+    if (error) {
+      selectors.authError.textContent = "Inloggen mislukt: " + error;
+      selectors.authError.classList.remove('hidden');
+    }
+  });
+
+  selectors.btnRegister.addEventListener('click', async () => {
+    const email = selectors.authEmail.value;
+    const password = selectors.authPassword.value;
+    const { error } = await registerUser(email, password);
+    if (error) {
+      selectors.authError.textContent = "Registreren mislukt: " + error;
+      selectors.authError.classList.remove('hidden');
+    }
+  });
+
+  selectors.btnGuest.addEventListener('click', async () => {
+    currentUser = null;
+    selectors.authOverlay.classList.add('hidden');
+    selectors.appContainer.classList.remove('hidden');
+    
+    // Fetch local data (since currentUser is null)
+    state.customFoods = await getCloudCustomFoods(null);
+    state.log = await getCloudLog(null);
+    
+    renderFoodList();
+    updateUI();
+    switchView('dashboard');
+  });
+
+  selectors.btnLogout.addEventListener('click', async () => {
+    await logoutUser();
+    // After logout, the onAuthStateChanged listener will hide the app and clear state
+  });
+
   selectors.navDashboardBtn.addEventListener('click', () => switchView('dashboard'));
   selectors.navDatabaseBtn.addEventListener('click', () => switchView('database'));
 
@@ -221,18 +287,14 @@ function setupEventListeners() {
 
   selectors.addSelectedBtn.addEventListener('click', () => {
     const checkboxes = document.querySelectorAll('.food-checkbox:checked');
-    const allFoods = [...foods, ...getCustomFoods()];
+    const allFoods = [...foods, ...state.customFoods];
     
     checkboxes.forEach(cb => {
       const foodId = cb.getAttribute('data-id');
       const food = allFoods.find(f => f.id === foodId);
       if (food) {
-        const li = cb.closest('li');
-        const amountInput = li.querySelector('.food-amount');
-        let amount = parseFloat(amountInput.value);
-        if (isNaN(amount) || amount <= 0) {
-          amount = (food.unit === 'g' || food.unit === 'ml') ? 100 : 1;
-        }
+        // Set default amount
+        const amount = (food.unit === 'g' || food.unit === 'ml') ? 100 : 1;
         state.log.push({ ...food, amount, logId: Date.now() + Math.random() });
       }
     });
@@ -240,9 +302,6 @@ function setupEventListeners() {
     // Reset checkboxes
     checkboxes.forEach(cb => {
       cb.checked = false;
-      const li = cb.closest('li');
-      li.querySelector('.food-amount').classList.add('hidden');
-      li.querySelector('.amount-unit').classList.add('hidden');
     });
     updateAddSelectedButton();
 
@@ -278,7 +337,7 @@ function setupEventListeners() {
     setTimeout(() => selectors.smartParseBtn.textContent = 'Smart Import (Scan Tekst)', 1000);
   });
 
-  selectors.saveCustomBtn.addEventListener('click', () => {
+  selectors.saveCustomBtn.addEventListener('click', async () => {
     const name = customInputs.name.value;
     if (!name) {
       alert('Geef het product een naam');
@@ -298,25 +357,27 @@ function setupEventListeners() {
         zinc: parseFloat(customInputs.zinc.value) || 0,
         iodine: parseFloat(customInputs.iodine.value) || 0,
         selenium: parseFloat(customInputs.selenium.value) || 0,
-        calories: 0 // Placeholder
+        calories: 0
       }
     };
 
     const editId = customInputs.editId.value;
     if (editId) {
-      updateCustomFood(editId, newFood);
+      await updateCloudCustomFood(currentUser.uid, editId, newFood);
       alert('Wijzigingen opgeslagen!');
     } else {
-      saveCustomFood(newFood);
-      alert('Opgeslagen in je eigen lijst!');
+      await saveCloudCustomFood(currentUser.uid, newFood);
+      alert('Opgeslagen in de cloud!');
     }
 
+    // Refresh custom foods from cloud
+    state.customFoods = await getCloudCustomFoods(currentUser.uid);
     renderFoodList(selectors.foodSearch.value);
     selectors.customForm.classList.add('hidden');
     resetEditForm();
   });
 
-  selectors.processTsvBtn.addEventListener('click', () => {
+  selectors.processTsvBtn.addEventListener('click', async () => {
     const tsv = selectors.tsvImportText.value;
     if (!tsv) return;
     const products = parseTSVProducts(tsv);
@@ -324,11 +385,12 @@ function setupEventListeners() {
       alert('Geen geldige data gevonden. Gebruik tabs als scheidingsteken.');
       return;
     }
-    saveCustomFoods(products);
+    await saveCloudCustomFoodsBulk(currentUser.uid, products);
+    state.customFoods = await getCloudCustomFoods(currentUser.uid);
     renderFoodList(selectors.foodSearch.value);
     selectors.tsvImportText.value = '';
     selectors.tsvForm.classList.add('hidden');
-    alert(`${products.length} producten toegevoegd!`);
+    alert(`${products.length} producten toegevoegd aan de cloud!`);
   });
 }
 
@@ -419,16 +481,31 @@ function renderLog() {
   selectors.logList.innerHTML = '';
   state.log.forEach((item, index) => {
     const li = document.createElement('li');
-    li.className = 'flex justify-between items-center py-1 px-2 hover:bg-slate-800/50 transition-colors gap-2 min-h-[32px]';
+    li.className = 'flex justify-between items-center py-1 px-2 hover:bg-slate-800/50 transition-colors gap-2 min-h-[32px] group';
     li.innerHTML = `
       <div class="flex items-center gap-2 overflow-hidden flex-1">
         <span class="text-xs font-medium text-slate-200 truncate" title="${item.name}">${item.name}</span>
-        <span class="text-[10px] text-emerald-400 font-mono bg-emerald-950/30 px-1.5 py-0.5 rounded flex-shrink-0">${item.amount}${item.unit || ''}</span>
       </div>
-      <button class="remove-btn text-slate-500 hover:text-red-400 p-1 flex-shrink-0 transition-colors rounded hover:bg-slate-800" data-index="${index}" title="Verwijder">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <input type="number" class="log-amount-input w-16 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[11px] text-emerald-400 font-mono text-center focus:ring-1 focus:ring-emerald-500 outline-none hover:bg-slate-800 transition-colors" value="${item.amount}">
+        <span class="text-[10px] text-slate-500">${item.unit || ''}</span>
+        <button class="remove-btn text-slate-500 hover:text-red-400 p-1 ml-1 flex-shrink-0 transition-colors rounded hover:bg-slate-800" data-index="${index}" title="Verwijder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
     `;
+    
+    // Amount changed
+    const amountInput = li.querySelector('.log-amount-input');
+    amountInput.addEventListener('change', (e) => {
+      let val = parseFloat(e.target.value);
+      if (isNaN(val) || val <= 0) val = (item.unit === 'g' || item.unit === 'ml') ? 100 : 1;
+      item.amount = val;
+      e.target.value = val;
+      saveState();
+      updateUI();
+    });
+
     li.querySelector('.remove-btn').addEventListener('click', () => {
       state.log.splice(index, 1);
       saveState();
@@ -441,7 +518,7 @@ function renderLog() {
 function renderInsights(insights) {
   if (insights.length === 0 && state.log.length > 0) {
     selectors.insightsContainer.innerHTML = `
-      <div class="p-6 bg-emerald-950/20 rounded-2xl border border-emerald-500/30 text-emerald-400 flex items-center">
+      <div class="col-span-full p-6 bg-emerald-950/20 rounded-2xl border border-emerald-500/30 text-emerald-400 flex items-center">
         <span class="text-2xl mr-4">🎉</span>
         <div>
           <p class="font-bold">Perfecte Balans!</p>
@@ -453,18 +530,18 @@ function renderInsights(insights) {
   }
 
   if (state.log.length === 0) {
-    selectors.insightsContainer.innerHTML = '<div class="p-6 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700 text-center text-slate-500 italic">Voeg voeding toe om een analyse te genereren...</div>';
+    selectors.insightsContainer.innerHTML = '<div class="col-span-full p-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700 text-center text-slate-500 italic text-sm">Voeg voeding toe om een analyse te genereren...</div>';
     return;
   }
 
   selectors.insightsContainer.innerHTML = '';
   insights.forEach(insight => {
     const div = document.createElement('div');
-    div.className = `p-5 rounded-2xl border-l-4 insight-${insight.type} flex items-start gap-4 mb-3`;
+    div.className = `flex items-start gap-2 py-1.5 px-1 border-b border-slate-800/30 last:border-0`;
     const icon = insight.type === 'warning' ? '⚠️' : (insight.type === 'danger' ? '🚫' : (insight.type === 'tip' ? '💡' : 'ℹ️'));
     div.innerHTML = `
-      <span class="text-xl mt-1">${icon}</span>
-      <p class="text-sm leading-relaxed">${insight.text}</p>
+      <span class="text-base flex-shrink-0 mt-0.5">${icon}</span>
+      <p class="text-sm leading-tight text-slate-300 font-medium">${insight.text}</p>
     `;
     selectors.insightsContainer.appendChild(div);
   });
