@@ -3,7 +3,8 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 
 export function setupAuthListeners(onLogin, onLogout) {
@@ -31,6 +32,15 @@ export async function registerUser(email, password) {
     return { user: userCredential.user, error: null };
   } catch (error) {
     return { user: null, error: error.message };
+  }
+}
+
+export async function resetPassword(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return { error: null };
+  } catch (error) {
+    return { error: error.message };
   }
 }
 

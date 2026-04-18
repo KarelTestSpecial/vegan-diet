@@ -1,6 +1,6 @@
 import { analyzeNutrients, RDI, calculateProteinGoal } from './logic/analyzer.js';
 import { getCloudCustomFoods, saveCloudCustomFood, saveCloudCustomFoodsBulk, deleteCloudCustomFood, updateCloudCustomFood, getCloudLog, saveCloudLog } from './logic/db.js';
-import { setupAuthListeners, loginUser, registerUser, logoutUser } from './logic/auth.js';
+import { setupAuthListeners, loginUser, registerUser, logoutUser, resetPassword } from './logic/auth.js';
 import { parseNutrientText, parseTSVProducts } from './logic/parser.js';
 import { foods } from './data/foods.js';
 import Chart from 'chart.js/auto';
@@ -44,7 +44,9 @@ const selectors = {
   btnLogin: document.getElementById('btn-login'),
   btnRegister: document.getElementById('btn-register'),
   btnGuest: document.getElementById('btn-guest'),
-  btnLogout: document.getElementById('btn-logout')
+  btnLogout: document.getElementById('btn-logout'),
+  togglePasswordBtn: document.getElementById('toggle-password-btn'),
+  btnResetPassword: document.getElementById('btn-reset-password')
 };
 
 // UI Elements for Custom Form
@@ -275,7 +277,39 @@ function setupEventListeners() {
 
   selectors.btnLogout.addEventListener('click', async () => {
     await logoutUser();
-    // After logout, the onAuthStateChanged listener will hide the app and clear state
+  });
+
+  selectors.togglePasswordBtn.addEventListener('click', () => {
+    const isPassword = selectors.authPassword.type === 'password';
+    selectors.authPassword.type = isPassword ? 'text' : 'password';
+    const icon = selectors.togglePasswordBtn.querySelector('svg');
+    if (isPassword) {
+      // Eye Off Icon
+      icon.innerHTML = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>';
+    } else {
+      // Eye Icon
+      icon.innerHTML = '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>';
+    }
+  });
+
+  selectors.btnResetPassword.addEventListener('click', async () => {
+    const email = selectors.authEmail.value;
+    if (!email) {
+      selectors.authError.textContent = "Vul eerst je e-mailadres in.";
+      selectors.authError.classList.remove('hidden');
+      return;
+    }
+    
+    const { error } = await resetPassword(email);
+    if (error) {
+      selectors.authError.textContent = "Fout bij herstellen: " + error;
+      selectors.authError.classList.remove('hidden');
+    } else {
+      selectors.authError.textContent = "Herstel-e-mail verzonden! Check je inbox.";
+      selectors.authError.classList.remove('bg-red-950/30', 'border-red-500/20', 'text-red-400');
+      selectors.authError.classList.add('bg-emerald-950/30', 'border-emerald-500/20', 'text-emerald-400');
+      selectors.authError.classList.remove('hidden');
+    }
   });
 
   selectors.navDashboardBtn.addEventListener('click', () => switchView('dashboard'));
