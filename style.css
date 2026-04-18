@@ -1,0 +1,123 @@
+:root {
+  --emerald: #10b981;
+  --emerald-dim: rgba(16, 185, 129, 0.1);
+  --sky: #0ea5e9;
+  --slate-950: #020617;
+  --slate-900: #0f172a;
+  --slate-800: #1e293b;
+  --slate-700: #334155;
+  --slate-400: #94a3b8;
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(51, 65, 85, 0.5);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  scrollbar-gutter: stable;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--slate-700);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--emerald);
+}
+
+/* Nutrient Stat Layout */
+.nutrient-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+#insights-container > div {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Input Styles */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Log List Styles */
+#food-log-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+#food-log-list li:hover {
+  border-color: var(--slate-700);
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.remove-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#food-log-list li:hover .remove-btn {
+  opacity: 1;
+}
+
+/* Insight Item Types */
+.insight-warning {
+  background: rgba(245, 158, 11, 0.05);
+  border-left: 4px solid #f59e0b;
+}
+
+.insight-danger {
+  background: rgba(239, 68, 68, 0.05);
+  border-left: 4px solid #ef4444;
+}
+
+.insight-tip {
+  background: rgba(14, 165, 233, 0.05);
+  border-left: 4px solid #0ea5e9;
+}
+
+.insight-info {
+  background: rgba(16, 185, 129, 0.05);
+  border-left: 4px solid #10b981;
+}

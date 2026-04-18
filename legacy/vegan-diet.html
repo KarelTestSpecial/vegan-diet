@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VeganGids: Plantaardig Optimalisatie Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; color: #0F172A; }
+.chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+@media (max-width: 640px) { .chart-container { height: 280px; } }
+.tab-active { border-bottom: 4px solid #10B981; color: #10B981; font-weight: 600; }
+.tab-inactive { border-bottom: 4px solid transparent; color: #64748B; }
+.tab-inactive:hover { color: #10B981; border-bottom: 4px solid #A7F3D0; }
+.glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid #E2E8F0; }
+.gradient-text { background: linear-gradient(to right, #10B981, #0EA5E9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: #10B981; cursor: pointer; margin-top: -8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #CBD5E1; border-radius: 3px; }
+input[type=range]:focus { outline: none; }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- Chosen Palette: Energetic & Playful (Emerald #10B981, Sky Blue #0EA5E9, Slate #0F172A, Amber #F59E0B) -->
+<!-- Application Structure Plan: The SPA uses a dashboard structure with tabbed navigation. This prevents information overload by compartmentalizing the specific dietary concerns (Omega-3, B12/Balance, Protein/Budget, K2). Interactive tools (like the soy milk slider and ALA conversion toggle) are embedded directly within their relevant sections to actively teach the user the concepts from the source report, transitioning passive reading into active exploration. -->
+<!-- Visualization & Content Choices: 
+1. Omega-3 -> Goal: Compare/Change -> Viz: Grouped Bar Chart (Chart.js) -> Interaction: Toggle conversion rate to visually demonstrate the inefficiency of ALA vs direct EPA/DHA. 
+2. B12 & Soy -> Goal: Inform/Change -> Viz: Interactive Range Slider & Dynamic Progress Bars (HTML/JS) -> Interaction: Drag slider to see the balance between B12 intake and Omega-6 pressure, directly reinforcing the report's advice to dilute.
+3. Protein -> Goal: Relationships/Compare -> Viz: Scatter Plot (Chart.js) -> Shows Cost vs Protein to highlight the Boni Lentils as the ultimate budget choice. 
+- Confirming NO SVG/Mermaid used. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <header class="mb-10 text-center">
+        <div class="inline-flex items-center justify-center p-3 bg-emerald-100 rounded-full mb-4">
+            <span class="text-3xl">🌱</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-3">Vegan<span class="gradient-text">Optimalisatie</span> Dashboard</h1>
+        <p class="text-lg text-slate-600 max-w-2xl mx-auto">Verken de data achter een evidence-based, budgetvriendelijk plantaardig dieet. Ontdek slimme keuzes voor Omega-3, B12, eiwitten en meer op basis van recente analyses.</p>
+    </header>
+
+    <div class="flex flex-wrap justify-center border-b border-slate-200 mb-8 gap-2 sm:gap-8" id="navTabs">
+        <button onclick="switchTab('omega')" id="tab-omega" class="tab-active pb-3 px-2 text-sm sm:text-base transition-colors flex items-center">
+            <span class="mr-2">🧠</span> Omega-3 Analyse
+        </button>
+        <button onclick="switchTab('b12')" id="tab-b12" class="tab-inactive pb-3 px-2 text-sm sm:text-base transition-colors flex items-center">
+            <span class="mr-2">⚖️</span> B12 & Melk Balans
+        </button>
+        <button onclick="switchTab('eiwit')" id="tab-eiwit" class="tab-inactive pb-3 px-2 text-sm sm:text-base transition-colors flex items-center">
+            <span class="mr-2">💰</span> Eiwit vs. Budget
+        </button>
+        <button onclick="switchTab('k2')" id="tab-k2" class="tab-inactive pb-3 px-2 text-sm sm:text-base transition-colors flex items-center">
+            <span class="mr-2">🦴</span> K2 & Mineralen
+        </button>
+    </div>
+
+    <main class="relative min-h-[500px]">
+
+        <section id="content-omega" class="block animate-fade-in">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-sm">
+                <div class="max-w-3xl mb-8">
+                    <h2 class="text-2xl font-bold mb-3 flex items-center">De Omega-3 Illusie: ALA vs. EPA/DHA</h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Postelein is de rijkste landplant qua Omega-3 en bevat sporen EPA, maar het levert voornamelijk <strong>ALA</strong>. Je lichaam moet ALA omzetten in de bruikbare vormen (EPA/DHA), een proces dat erg inefficiënt is (gemiddeld slechts 5-10%). 
+                        Voor een budgetvriendelijke basis zijn <strong>walnoten en Everyday/Boni lijnzaadolie</strong> (slechts 1 el/dag nodig) uitstekend. Voor directe EPA/DHA is algenolie superieur.
+                    </p>
+                    <div class="bg-blue-50 border-l-4 border-sky-500 p-4 rounded-r-lg">
+                        <p class="text-sm text-sky-800 font-medium">Interactie: Klik op de knop hieronder om te zien hoeveel bruikbare EPA/DHA er overblijft na lichamelijke omzetting.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center mb-6">
+                    <button id="toggleConversionBtn" class="bg-slate-800 hover:bg-slate-700 text-white font-medium py-2 px-6 rounded-full transition-colors flex items-center shadow-md">
+                        <span class="mr-2">🔄</span> Simuleer Lichamelijke Omzetting
+                    </button>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="omegaChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="content-b12" class="hidden animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-sm">
+                    <h2 class="text-2xl font-bold mb-3 flex items-center">Sojamelk: De B12 / Omega-6 Balans</h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        Verrijkte sojamelk is fantastisch voor B12. Echter, grote hoeveelheden (zoals 0.75 liter per dag) zorgen voor een onnodig hoge inname van Omega-6. Een overschot aan Omega-6 werkt de opname van Omega-3 tegen.
+                        <br><br><strong>Het Advies:</strong> Verlaag de inname en vul aan met water. Dit verlaagt de Omega-6 druk én bespaart geld, zonder dat je hoeft over te stappen op dure havermelk.
+                    </p>
+                    
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-inner">
+                        <label for="milkSlider" class="block text-sm font-semibold text-slate-700 mb-2 flex justify-between">
+                            <span>Sojamelk Inname per Dag</span>
+                            <span id="sliderValue" class="text-emerald-600 font-bold text-lg">0.75 Liter</span>
+                        </label>
+                        <input type="range" id="milkSlider" min="0" max="1" step="0.1" value="0.75" class="w-full mb-6">
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-slate-700">Vitamine B12 Dekking</span>
+                                    <span id="b12Score" class="font-bold text-emerald-600">100%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div id="b12Bar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-slate-700">Omega-6 Druk</span>
+                                    <span id="omega6Score" class="font-bold text-amber-500">Hoog (Suboptimaal)</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div id="omega6Bar" class="bg-amber-400 h-2.5 rounded-full transition-all duration-300" style="width: 80%"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-slate-700">Kostenbesparing</span>
+                                    <span id="costScore" class="font-bold text-slate-500">Geen</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2.5">
+                                    <div id="costBar" class="bg-slate-400 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col justify-center items-center text-center bg-emerald-50 border-emerald-100">
+                    <div id="conclusionIcon" class="text-6xl mb-4">⚠️</div>
+                    <h3 id="conclusionTitle" class="text-xl font-bold text-slate-800 mb-2">Hoge Omega-6 Inname</h3>
+                    <p id="conclusionText" class="text-slate-600">Je krijgt voldoende B12 binnen, maar door de grote hoeveelheid sojamelk bouw je Omega-6 druk op. Schuif de slider naar links richting 0.5 liter voor de optimale balans met kraantjeswater.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="content-eiwit" class="hidden animate-fade-in">
+            <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-sm">
+                <div class="max-w-3xl mb-8">
+                    <h2 class="text-2xl font-bold mb-3 flex items-center">Eiwit vs. Budget: De Linzen Hack</h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        Plantaardige eiwitten hoeven niet duur te zijn. Hoewel vleesvervangers hoog scoren in eiwit, zijn ze vaak prijzig. De absolute winnaar in de categorie "Soja-vrij, geen kooktijd vereist & goedkoop" zijn de <strong>Boni Plan't bruine linzen</strong> uit blik/bokaal. De onderstaande grafiek toont de verhouding tussen eiwitgehalte en de geschatte prijs.
+                    </p>
+                </div>
+
+                <div class="chart-container" style="height: 400px; max-height: 500px;">
+                    <canvas id="proteinChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-slate-500 mt-4">Kwadrant rechtsonder = Ideaal (Hoog eiwit, lage kosten). De grootte van de bubbel reflecteert bereidingsgemak.</p>
+            </div>
+        </section>
+
+        <section id="content-k2" class="hidden animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel rounded-2xl p-6 shadow-sm border-l-4 border-emerald-500">
+                    <div class="text-4xl mb-4">🥬</div>
+                    <h3 class="text-xl font-bold mb-2">Vitamine K1</h3>
+                    <p class="text-slate-600">
+                        Voldoende aanwezig in het vegan dieet. Wordt voornamelijk gevonden in donkere bladgroenten zoals spinazie, boerenkool en broccoli. Geen zorgen over deficiëntie bij een gevarieerd plantaardig eetpatroon.
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 shadow-sm border-l-4 border-amber-500">
+                    <div class="text-4xl mb-4">🫘</div>
+                    <h3 class="text-xl font-bold mb-2">Vitamine K2</h3>
+                    <p class="text-slate-600">
+                        Een potentieel aandachtspunt. Komt voornamelijk voor in dierlijke producten en gefermenteerde voeding zoals <strong>Natto</strong> (gefermenteerde sojabonen). Als je dit niet eet, is een (gecombineerd D3/K2) supplement aan te raden voor optimale botgezondheid en calciumdistributie.
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 shadow-sm border-l-4 border-sky-500 md:col-span-2 flex flex-col sm:flex-row items-center gap-6">
+                    <div class="text-5xl">⚡</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Optimaliseer je Mineralen</h3>
+                        <p class="text-slate-600">
+                            <strong>IJzer:</strong> Combineer je budgetvriendelijke linzen altijd met een bron van Vitamine C (zoals paprika of een scheutje citroensap) om de opname van non-heem ijzer drastisch te verhogen.<br><br>
+                            <strong>Zink:</strong> Voeg een handje pompoenpitten of hennepzaad toe aan je gerechten als efficiënte plantaardige zinkbron.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    const state = {
+        omegaConverted: false
+    };
+
+    const tooltipConfig = {
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(' ');
+                        }
+                        return label;
+                    }
+                },
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleFont: { family: "'Inter', sans-serif", size: 14 },
+                bodyFont: { family: "'Inter', sans-serif", size: 13 },
+                padding: 12,
+                cornerRadius: 8
+            },
+            legend: {
+                labels: { font: { family: "'Inter', sans-serif" } }
+            }
+        },
+        maintainAspectRatio: false,
+        responsive: true
+    };
+
+    let omegaChartInstance = null;
+    let proteinChartInstance = null;
+
+    function initCharts() {
+        if (!omegaChartInstance) {
+            const ctxOmega = document.getElementById('omegaChart').getContext('2d');
+            omegaChartInstance = new Chart(ctxOmega, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        ['Lijnzaadolie', '(Everyday/Boni - 1 el)'], 
+                        ['Postelein', '(100g portie)'], 
+                        ['Walnoten', '(Handje - 30g)'], 
+                        ['Algenolie', '(1 Capsule)']
+                    ],
+                    datasets: [
+                        {
+                            label: 'Totaal ALA (Plantaardig precursor)',
+                            data: [7100, 300, 2700, 0],
+                            backgroundColor: '#10B981',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Directe EPA/DHA (Klaar voor gebruik)',
+                            data: [0, 10, 0, 450],
+                            backgroundColor: '#0EA5E9',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    ...tooltipConfig,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Milligram (mg)', font: { family: "'Inter', sans-serif", weight: '600' } },
+                            grid: { color: '#F1F5F9' }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        if (!proteinChartInstance) {
+            const ctxProtein = document.getElementById('proteinChart').getContext('2d');
+            proteinChartInstance = new Chart(ctxProtein, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Boni Bruine Linzen',
+                            data: [{x: 9, y: 0.20}],
+                            backgroundColor: '#10B981',
+                            pointRadius: 15,
+                            pointHoverRadius: 18
+                        },
+                        {
+                            label: 'Premium Haver/Soja Burger',
+                            data: [{x: 15, y: 1.80}],
+                            backgroundColor: '#F59E0B',
+                            pointRadius: 8,
+                            pointHoverRadius: 12
+                        },
+                        {
+                            label: 'Tofu (Natuur)',
+                            data: [{x: 13, y: 0.60}],
+                            backgroundColor: '#0EA5E9',
+                            pointRadius: 10,
+                            pointHoverRadius: 14
+                        },
+                        {
+                            label: 'Kikkererwten (Blik)',
+                            data: [{x: 7, y: 0.30}],
+                            backgroundColor: '#94A3B8',
+                            pointRadius: 12,
+                            pointHoverRadius: 15
+                        }
+                    ]
+                },
+                options: {
+                    ...tooltipConfig,
+                    plugins: {
+                        ...tooltipConfig.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw.x}g Eiwit, €${context.raw.y.toFixed(2)}/100g`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Eiwit per 100g (gram)', font: { family: "'Inter', sans-serif", weight: '600' } },
+                            grid: { color: '#F1F5F9' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Geschatte Prijs per 100g (€)', font: { family: "'Inter', sans-serif", weight: '600' } },
+                            grid: { color: '#F1F5F9' }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function switchTab(tabId) {
+        const tabs = ['omega', 'b12', 'eiwit', 'k2'];
+        tabs.forEach(t => {
+            document.getElementById(`content-${t}`).classList.add('hidden');
+            document.getElementById(`content-${t}`).classList.remove('block');
+            document.getElementById(`tab-${t}`).className = 'tab-inactive pb-3 px-2 text-sm sm:text-base transition-colors flex items-center';
+        });
+
+        document.getElementById(`content-${tabId}`).classList.remove('hidden');
+        document.getElementById(`content-${tabId}`).classList.add('block');
+        document.getElementById(`tab-${tabId}`).className = 'tab-active pb-3 px-2 text-sm sm:text-base transition-colors flex items-center';
+
+        if (tabId === 'omega' || tabId === 'eiwit') {
+            initCharts();
+        }
+    }
+
+    document.getElementById('toggleConversionBtn').addEventListener('click', function() {
+        state.omegaConverted = !state.omegaConverted;
+        const btn = document.getElementById('toggleConversionBtn');
+        
+        if (state.omegaConverted) {
+            btn.innerHTML = '<span class="mr-2">🔙</span> Toon Originele Waarden';
+            btn.classList.replace('bg-slate-800', 'bg-sky-600');
+            btn.classList.replace('hover:bg-slate-700', 'hover:bg-sky-500');
+            
+            omegaChartInstance.data.datasets[0].label = 'Bruikbare EPA/DHA na omzetting (geschat ~5%)';
+            omegaChartInstance.data.datasets[0].data = [355, 15, 135, 0];
+            omegaChartInstance.data.datasets[0].backgroundColor = '#F59E0B'; 
+        } else {
+            btn.innerHTML = '<span class="mr-2">🔄</span> Simuleer Lichamelijke Omzetting';
+            btn.classList.replace('bg-sky-600', 'bg-slate-800');
+            btn.classList.replace('hover:bg-sky-500', 'hover:bg-slate-700');
+            
+            omegaChartInstance.data.datasets[0].label = 'Totaal ALA (Plantaardig precursor)';
+            omegaChartInstance.data.datasets[0].data = [7100, 300, 2700, 0];
+            omegaChartInstance.data.datasets[0].backgroundColor = '#10B981';
+        }
+        omegaChartInstance.update();
+    });
+
+    const milkSlider = document.getElementById('milkSlider');
+    milkSlider.addEventListener('input', function(e) {
+        const val = parseFloat(e.target.value);
+        document.getElementById('sliderValue').innerText = val.toFixed(2) + ' Liter';
+        
+        let b12Width = Math.min(100, (val / 0.5) * 100);
+        document.getElementById('b12Bar').style.width = b12Width + '%';
+        document.getElementById('b12Score').innerText = b12Width >= 100 ? '100%+' : Math.round(b12Width) + '%';
+        
+        let omega6Width = (val / 1) * 100;
+        const o6Bar = document.getElementById('omega6Bar');
+        const o6Score = document.getElementById('omega6Score');
+        o6Bar.style.width = omega6Width + '%';
+        
+        let costWidth = 100 - ((val / 1) * 100);
+        document.getElementById('costBar').style.width = costWidth + '%';
+
+        const cIcon = document.getElementById('conclusionIcon');
+        const cTitle = document.getElementById('conclusionTitle');
+        const cText = document.getElementById('conclusionText');
+
+        if (val > 0.6) {
+            o6Bar.className = 'bg-amber-500 h-2.5 rounded-full transition-all duration-300';
+            o6Score.innerText = 'Hoog (Suboptimaal)';
+            o6Score.className = 'font-bold text-amber-500';
+            document.getElementById('costScore').innerText = 'Laag';
+            
+            cIcon.innerText = '⚠️';
+            cTitle.innerText = 'Hoge Omega-6 Druk';
+            cText.innerText = 'Je krijgt voldoende B12 binnen, maar door de grote hoeveelheid sojamelk bouw je onnodige Omega-6 druk op, wat Omega-3 opname kan hinderen.';
+            document.getElementById('content-b12').querySelector('.glass-panel:nth-child(2)').className = 'glass-panel rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col justify-center items-center text-center bg-amber-50 border-amber-100';
+        } else if (val >= 0.3) {
+            o6Bar.className = 'bg-emerald-500 h-2.5 rounded-full transition-all duration-300';
+            o6Score.innerText = 'Optimaal';
+            o6Score.className = 'font-bold text-emerald-600';
+            document.getElementById('costScore').innerText = 'Optimaal (Geld bespaard)';
+            
+            cIcon.innerText = '✅';
+            cTitle.innerText = 'De Sweet Spot!';
+            cText.innerText = 'Perfect. Je haalt voldoende B12 uit ca. een halve liter, je houdt de Omega-6 inname laag, en je bespaart geld door aan te vullen met water.';
+            document.getElementById('content-b12').querySelector('.glass-panel:nth-child(2)').className = 'glass-panel rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col justify-center items-center text-center bg-emerald-50 border-emerald-100';
+        } else {
+            o6Bar.className = 'bg-sky-400 h-2.5 rounded-full transition-all duration-300';
+            o6Score.innerText = 'Laag';
+            o6Score.className = 'font-bold text-sky-500';
+            document.getElementById('b12Score').className = 'font-bold text-amber-500';
+            document.getElementById('costScore').innerText = 'Maximaal';
+            
+            cIcon.innerText = '📉';
+            cTitle.innerText = 'Let op je B12';
+            cText.innerText = 'Je Omega-6 is erg laag, maar je haalt niet voldoende B12 uit alleen je melk. Een supplement of edelgistvlokken zijn in dit scenario noodzakelijk.';
+            document.getElementById('content-b12').querySelector('.glass-panel:nth-child(2)').className = 'glass-panel rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col justify-center items-center text-center bg-sky-50 border-sky-100';
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        initCharts();
+    });
+
+</script>
+</body>
+</html>
