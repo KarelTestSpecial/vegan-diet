@@ -51,6 +51,18 @@ export function analyzeNutrients(log, weight) {
     if (item.id === 'soy-milk-enriched') totals.soy_milk_volume += item.amount;
   });
 
+  // Special logic: EPA/DHA counts towards the main Omega-3 (ALA) chart 
+  // if it's superior or equivalent. We add its ALA-equivalence to totals.ala 
+  // so the chart reflects the overall Omega-3 status.
+  if (totals.epa_dha > 0) {
+    // If EPA/DHA goal is met, it should fill the Omega-3 ring.
+    // We add enough 'virtual ALA' to represent the EPA/DHA contribution.
+    const epaContribution = (totals.epa_dha / RDI.epa_dha) * RDI.ala;
+    // We don't want to double count, but since Algenolie usually has 0 ALA, 
+    // this just adds the equivalent status.
+    totals.ala += epaContribution;
+  }
+
   const proteinGoal = calculateProteinGoal(weight);
   const insights = [];
 

@@ -37,6 +37,7 @@ const selectors = {
   dashboardView: document.getElementById('dashboard-view'),
   databaseView: document.getElementById('database-view'),
   guideView: document.getElementById('guide-view'),
+  databaseProductsList: document.getElementById('database-products-list'),
   // Auth Selectors
   authOverlay: document.getElementById('auth-overlay'),
   appContainer: document.getElementById('app'),
@@ -139,6 +140,7 @@ function switchView(view) {
     selectors.databaseView.classList.remove('hidden');
     selectors.navDatabaseBtn.classList.add(...activeClasses);
     selectors.navDatabaseBtn.classList.remove(...inactiveClasses);
+    renderDatabaseTable();
   } else if (view === 'guide') {
     selectors.guideView.classList.remove('hidden');
     selectors.navGuideBtn.classList.add(...activeClasses);
@@ -182,25 +184,34 @@ function renderFoodList(searchTerm = '') {
     li.className = 'py-1 px-2 flex items-center justify-between hover:bg-slate-800/50 transition-colors group gap-2 min-h-[32px]';
     
     li.innerHTML = `
-      <div class="flex items-center flex-1 min-w-0">
-        <input type="checkbox" class="food-checkbox w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 rounded focus:ring-emerald-500 flex-shrink-0 cursor-pointer" data-id="${food.id}">
+      <div class="flex items-center flex-1 min-w-0 pointer-events-none">
+        <input type="checkbox" class="food-checkbox w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 rounded focus:ring-emerald-500 flex-shrink-0 cursor-pointer pointer-events-auto" data-id="${food.id}">
         <div class="ml-2 flex items-center gap-2 min-w-0">
           <span class="text-xs font-medium truncate text-slate-200">${food.name}</span>
           ${food.isDefault ? '' : '<span class="text-[9px] text-emerald-500 uppercase tracking-tighter flex-shrink-0">Eigen</span>'}
         </div>
       </div>
       <div class="flex items-center gap-1 flex-shrink-0">
-        <button class="edit-btn p-1 text-slate-400 hover:text-amber-400 rounded transition-colors" title="Bewerk" data-id="${food.id}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 Z"/></svg>
+        <button class="edit-btn p-1 text-slate-400 hover:text-amber-400 rounded transition-colors opacity-0 group-hover:opacity-100" title="Bewerk" data-id="${food.id}">
+          <svg class="pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 Z"/></svg>
         </button>
-        <button class="delete-btn p-1 text-slate-400 hover:text-red-400 rounded transition-colors" title="Verwijder" data-id="${food.id}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        <button class="delete-btn p-1 text-slate-400 hover:text-red-400 rounded transition-colors opacity-0 group-hover:opacity-100" title="Verwijder" data-id="${food.id}">
+          <svg class="pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
         </button>
       </div>
     `;
 
     const checkbox = li.querySelector('.food-checkbox');
     checkbox.addEventListener('change', () => {
+      updateAddSelectedButton();
+    });
+
+    // Toggle checkbox when clicking the row (but not the buttons)
+    li.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      if (e.target === checkbox) return; // Checkbox handles its own click
+      
+      checkbox.checked = !checkbox.checked;
       updateAddSelectedButton();
     });
 
@@ -225,9 +236,70 @@ function renderFoodList(searchTerm = '') {
   });
 
   if (matchCount === 0) {
-    selectors.foodList.innerHTML = '<li class="p-4 text-center text-sm text-slate-500 italic">Geen producten gevonden...</li>';
+    selectors.foodList.innerHTML = '<li class="p-4 text-center text-sm text-slate-400 italic">Geen producten gevonden...</li>';
   }
   updateAddSelectedButton();
+}
+
+function renderDatabaseTable() {
+  if (!selectors.databaseProductsList) return;
+  
+  const allFoods = [...foods, ...state.customFoods];
+  allFoods.sort((a, b) => a.name.localeCompare(b.name));
+  
+  selectors.databaseProductsList.innerHTML = '';
+  
+  allFoods.forEach(food => {
+    const tr = document.createElement('tr');
+    tr.className = 'border-b border-slate-800/30 hover:bg-slate-800/20 transition-colors';
+    
+    const n = food.nutrients || {};
+    
+    tr.innerHTML = `
+      <td class="px-4 py-3">
+        <div class="flex flex-col">
+          <span class="font-medium text-slate-200">${food.name}</span>
+          ${food.isDefault ? '<span class="text-[9px] text-slate-500 uppercase">Systeem</span>' : '<span class="text-[9px] text-emerald-500 uppercase font-bold">Eigen</span>'}
+        </div>
+      </td>
+      <td class="px-4 py-3 text-slate-300">${n.protein || 0}g</td>
+      <td class="px-4 py-3 text-slate-300">${n.b12 || 0}μg</td>
+      <td class="px-4 py-3 text-slate-300">${(n.ala / 1000).toFixed(2)}g</td>
+      <td class="px-4 py-3 text-slate-300">${n.iron || 0}mg</td>
+      <td class="px-4 py-3 text-slate-300">${n.calcium || 0}mg</td>
+      <td class="px-4 py-3 text-right">
+        <div class="flex justify-end gap-2">
+          <button class="edit-db-btn p-1.5 text-slate-400 hover:text-amber-400 rounded hover:bg-slate-800 transition-colors" data-id="${food.id}" title="Bewerken">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 Z"/></svg>
+          </button>
+          ${food.isDefault ? '' : `
+            <button class="delete-db-btn p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" data-id="${food.id}" title="Verwijderen">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+          `}
+        </div>
+      </td>
+    `;
+    
+    tr.querySelector('.edit-db-btn').addEventListener('click', () => {
+      populateEditForm(food);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    const deleteBtn = tr.querySelector('.delete-db-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async () => {
+        if (confirm(`Product "${food.name}" verwijderen?`)) {
+          await deleteCloudCustomFood(currentUser.uid, food.id);
+          state.customFoods = state.customFoods.filter(f => f.id !== food.id);
+          renderFoodList(selectors.foodSearch.value);
+          renderDatabaseTable();
+        }
+      });
+    }
+    
+    selectors.databaseProductsList.appendChild(tr);
+  });
 }
 
 function updateAddSelectedButton() {
@@ -439,6 +511,7 @@ function setupEventListeners() {
     // Refresh custom foods from cloud
     state.customFoods = await getCloudCustomFoods(currentUser.uid);
     renderFoodList(selectors.foodSearch.value);
+    renderDatabaseTable();
     selectors.customForm.classList.add('hidden');
     resetEditForm();
   });
@@ -454,6 +527,7 @@ function setupEventListeners() {
     await saveCloudCustomFoodsBulk(currentUser.uid, products);
     state.customFoods = await getCloudCustomFoods(currentUser.uid);
     renderFoodList(selectors.foodSearch.value);
+    renderDatabaseTable();
     selectors.tsvImportText.value = '';
     selectors.tsvForm.classList.add('hidden');
     alert(`${products.length} producten toegevoegd aan de cloud!`);
@@ -554,7 +628,7 @@ function renderLog() {
       </div>
       <div class="flex items-center gap-1 flex-shrink-0">
         <input type="number" class="log-amount-input w-16 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[11px] text-emerald-400 font-mono text-center focus:ring-1 focus:ring-emerald-500 outline-none hover:bg-slate-800 transition-colors" value="${item.amount}">
-        <span class="text-[10px] text-slate-500">${item.unit || ''}</span>
+        <span class="text-[10px] text-slate-400">${item.unit || ''}</span>
         <button class="remove-btn text-slate-500 hover:text-red-400 p-1 ml-1 flex-shrink-0 transition-colors rounded hover:bg-slate-800" data-index="${index}" title="Verwijder">
           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
