@@ -188,7 +188,6 @@ function renderFoodList(searchTerm = '') {
         <input type="checkbox" class="food-checkbox w-4 h-4 text-emerald-500 bg-slate-900 border-slate-700 rounded focus:ring-emerald-500 flex-shrink-0 cursor-pointer pointer-events-auto" data-id="${food.id}">
         <div class="ml-2 flex items-center gap-2 min-w-0">
           <span class="text-xs font-medium truncate text-slate-200">${food.name}</span>
-          ${food.isDefault ? '' : '<span class="text-[9px] text-emerald-500 uppercase tracking-tighter flex-shrink-0">Eigen</span>'}
         </div>
       </div>
       <div class="flex items-center gap-1 flex-shrink-0">
@@ -217,11 +216,7 @@ function renderFoodList(searchTerm = '') {
 
     // Actions for all items
     li.querySelector('.delete-btn').addEventListener('click', async (e) => {
-      if (food.isDefault) {
-        alert('Je kunt de standaard database producten niet verwijderen.');
-        return;
-      }
-      if (confirm('Eigen product verwijderen?')) {
+      if (confirm('Product verwijderen?')) {
         await deleteCloudCustomFood(currentUser.uid, food.id);
         state.customFoods = state.customFoods.filter(f => f.id !== food.id);
         renderFoodList(selectors.foodSearch.value);
@@ -259,7 +254,6 @@ function renderDatabaseTable() {
       <td class="px-4 py-3">
         <div class="flex flex-col">
           <span class="font-medium text-slate-200">${food.name}</span>
-          ${food.isDefault ? '<span class="text-[9px] text-slate-500 uppercase">Systeem</span>' : '<span class="text-[9px] text-emerald-500 uppercase font-bold">Eigen</span>'}
         </div>
       </td>
       <td class="px-4 py-3 text-slate-300">${n.protein || 0}g</td>
@@ -272,11 +266,9 @@ function renderDatabaseTable() {
           <button class="edit-db-btn p-1.5 text-slate-400 hover:text-amber-400 rounded hover:bg-slate-800 transition-colors" data-id="${food.id}" title="Bewerken">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 Z"/></svg>
           </button>
-          ${food.isDefault ? '' : `
-            <button class="delete-db-btn p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" data-id="${food.id}" title="Verwijderen">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-            </button>
-          `}
+          <button class="delete-db-btn p-1.5 text-slate-400 hover:text-red-400 rounded hover:bg-slate-800 transition-colors" data-id="${food.id}" title="Verwijderen">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
         </div>
       </td>
     `;
