@@ -33,8 +33,10 @@ const selectors = {
   processTsvBtn: document.getElementById('process-tsv-btn'),
   navDashboardBtn: document.getElementById('nav-dashboard-btn'),
   navDatabaseBtn: document.getElementById('nav-database-btn'),
+  navGuideBtn: document.getElementById('nav-guide-btn'),
   dashboardView: document.getElementById('dashboard-view'),
   databaseView: document.getElementById('database-view'),
+  guideView: document.getElementById('guide-view'),
   // Auth Selectors
   authOverlay: document.getElementById('auth-overlay'),
   appContainer: document.getElementById('app'),
@@ -43,8 +45,10 @@ const selectors = {
   authError: document.getElementById('auth-error'),
   btnLogin: document.getElementById('btn-login'),
   btnRegister: document.getElementById('btn-register'),
-  btnGuest: document.getElementById('btn-guest'),
   btnLogout: document.getElementById('btn-logout'),
+  btnCloseAuth: document.getElementById('btn-close-auth'),
+  btnShowLogin: document.getElementById('btn-show-login'),
+  profileName: document.getElementById('profile-name'),
   togglePasswordBtn: document.getElementById('toggle-password-btn'),
   btnResetPassword: document.getElementById('btn-reset-password')
 };
@@ -65,31 +69,49 @@ const customInputs = {
 };
 
 // Initialize app
-function init() {
+async function init() {
   initCharts();
   setupEventListeners();
   loadState(); // load local weight
+  
+  // Initial render (Guest Mode by Default)
+  state.customFoods = await getCloudCustomFoods(null);
+  state.log = await getCloudLog(null);
+  renderFoodList();
+  updateUI();
+  switchView('dashboard');
   
   setupAuthListeners(async (user) => {
     // Logged In
     currentUser = user;
     selectors.authOverlay.classList.add('hidden');
-    selectors.appContainer.classList.remove('hidden');
+    
+    // Update Profile UI
+    selectors.profileName.textContent = user.email;
+    selectors.btnShowLogin.classList.add('hidden');
+    selectors.btnLogout.classList.remove('hidden');
     
     // Fetch data from Cloud
     state.customFoods = await getCloudCustomFoods(user.uid);
     state.log = await getCloudLog(user.uid);
     
-    renderFoodList();
+    renderFoodList(selectors.foodSearch.value);
     updateUI();
-    switchView('dashboard');
-  }, () => {
+  }, async () => {
     // Logged Out
     currentUser = null;
-    selectors.authOverlay.classList.remove('hidden');
-    selectors.appContainer.classList.add('hidden');
-    state.log = [];
-    state.customFoods = [];
+    
+    // Update Profile UI
+    selectors.profileName.textContent = 'Gast (Lokaal)';
+    selectors.btnShowLogin.classList.remove('hidden');
+    selectors.btnLogout.classList.add('hidden');
+    
+    // Re-fetch local data if logged out
+    state.customFoods = await getCloudCustomFoods(null);
+    state.log = await getCloudLog(null);
+    
+    renderFoodList(selectors.foodSearch.value);
+    updateUI();
   });
 }
 
@@ -97,24 +119,30 @@ function switchView(view) {
   const activeClasses = ['bg-slate-800', 'text-emerald-400', 'font-bold', 'ring-1', 'ring-emerald-500/50', 'shadow-[0_0_15px_rgba(16,185,129,0.1)]'];
   const inactiveClasses = ['text-slate-400', 'font-medium', 'hover:bg-slate-800/50', 'hover:text-slate-300'];
 
+  // Reset all
+  selectors.dashboardView.classList.add('hidden');
+  selectors.databaseView.classList.add('hidden');
+  selectors.guideView.classList.add('hidden');
+  
+  selectors.navDashboardBtn.classList.remove(...activeClasses);
+  selectors.navDashboardBtn.classList.add(...inactiveClasses);
+  selectors.navDatabaseBtn.classList.remove(...activeClasses);
+  selectors.navDatabaseBtn.classList.add(...inactiveClasses);
+  selectors.navGuideBtn.classList.remove(...activeClasses);
+  selectors.navGuideBtn.classList.add(...inactiveClasses);
+
   if (view === 'dashboard') {
     selectors.dashboardView.classList.remove('hidden');
-    selectors.databaseView.classList.add('hidden');
-    
     selectors.navDashboardBtn.classList.add(...activeClasses);
     selectors.navDashboardBtn.classList.remove(...inactiveClasses);
-    
-    selectors.navDatabaseBtn.classList.remove(...activeClasses);
-    selectors.navDatabaseBtn.classList.add(...inactiveClasses);
   } else if (view === 'database') {
-    selectors.dashboardView.classList.add('hidden');
     selectors.databaseView.classList.remove('hidden');
-    
-    selectors.navDashboardBtn.classList.remove(...activeClasses);
-    selectors.navDashboardBtn.classList.add(...inactiveClasses);
-    
     selectors.navDatabaseBtn.classList.add(...activeClasses);
     selectors.navDatabaseBtn.classList.remove(...inactiveClasses);
+  } else if (view === 'guide') {
+    selectors.guideView.classList.remove('hidden');
+    selectors.navGuideBtn.classList.add(...activeClasses);
+    selectors.navGuideBtn.classList.remove(...inactiveClasses);
   }
 }
 
@@ -261,18 +289,21 @@ function setupEventListeners() {
     }
   });
 
-  selectors.btnGuest.addEventListener('click', async () => {
-    currentUser = null;
+  selectors.btnShowLogin.addEventListener('click', () => {
+    selectors.authOverlay.classList.remove('hidden');
+    // Try to auto-suggest credentials if Credential Management API is available
+    if (navigator.credentials && navigator.credentials.get) {
+      navigator.credentials.get({ password: true, unmediated: false }).then((cred) => {
+        if (cred && cred.id && cred.password) {
+          selectors.authEmail.value = cred.id;
+          selectors.authPassword.value = cred.password;
+        }
+      }).catch(err => console.log('Credential API niet beschikbaar/geweigerd', err));
+    }
+  });
+
+  selectors.btnCloseAuth.addEventListener('click', () => {
     selectors.authOverlay.classList.add('hidden');
-    selectors.appContainer.classList.remove('hidden');
-    
-    // Fetch local data (since currentUser is null)
-    state.customFoods = await getCloudCustomFoods(null);
-    state.log = await getCloudLog(null);
-    
-    renderFoodList();
-    updateUI();
-    switchView('dashboard');
   });
 
   selectors.btnLogout.addEventListener('click', async () => {
@@ -314,6 +345,7 @@ function setupEventListeners() {
 
   selectors.navDashboardBtn.addEventListener('click', () => switchView('dashboard'));
   selectors.navDatabaseBtn.addEventListener('click', () => switchView('database'));
+  selectors.navGuideBtn.addEventListener('click', () => switchView('guide'));
 
   selectors.foodSearch.addEventListener('input', (e) => {
     renderFoodList(e.target.value);
