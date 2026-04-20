@@ -137,6 +137,30 @@ export const foods = [
     category: 'Legumes'
   },
   {
+    id: 'peas-canned-boni',
+    name: 'Boni Erwten (Blik)',
+    unit: 'g',
+    nutrients: {
+      calories: 88,
+      protein: 6.5,
+      iron: 1.5,
+      fiber: 5.2
+    },
+    category: 'Legumes'
+  },
+  {
+    id: 'white-beans-tomato-everyday',
+    name: 'Everyday Witte Bonen in Tomatensaus',
+    unit: 'g',
+    nutrients: {
+      calories: 87,
+      protein: 3.7,
+      iron: 1.8,
+      fiber: 4.4
+    },
+    category: 'Legumes'
+  },
+  {
     id: 'lentils-brown-boni',
     name: 'Boni Plan\'t Bruine Linzen (Blik)',
     unit: 'g',
@@ -369,6 +393,73 @@ export const foods = [
     nutrients: {
       calories: 270,
       iron: 15.0
+    },
+    category: 'Supplements'
+  },
+  {
+    id: 'apple-raw',
+    name: 'Appel (met schil)',
+    unit: 'g',
+    nutrients: {
+      calories: 52,
+      protein: 0.3,
+      iron: 0.1,
+      fiber: 2.4,
+      vitc: 4.6
+    },
+    category: 'Fruit'
+  },
+  {
+    id: 'orange-raw',
+    name: 'Appelsien',
+    unit: 'g',
+    nutrients: {
+      calories: 47,
+      protein: 0.9,
+      iron: 0.1,
+      fiber: 2.4,
+      vitc: 53.2
+    },
+    category: 'Fruit'
+  },
+  {
+    id: 'banana-raw',
+    name: 'Banaan',
+    unit: 'g',
+    nutrients: {
+      calories: 89,
+      protein: 1.1,
+      iron: 0.3,
+      fiber: 2.6,
+      vitc: 8.7,
+      selenium: 1.0
+    },
+    category: 'Fruit'
+  },
+  {
+    id: 'supplement-b12',
+    name: 'B12 Supplement (100μg)',
+    unit: 'portion',
+    nutrients: {
+      b12: 100
+    },
+    category: 'Supplements'
+  },
+  {
+    id: 'supplement-k2',
+    name: 'K2 Supplement (100μg)',
+    unit: 'portion',
+    nutrients: {
+      k2: 100
+    },
+    category: 'Supplements'
+  },
+  {
+    id: 'supplement-seleen',
+    name: 'Seleen Supplement (50μg)',
+    unit: 'portion',
+    nutrients: {
+      selenium: 50
     },
     category: 'Supplements'
   }
