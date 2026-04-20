@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Veganer Diätanalysator | Optimieren Sie Ihren Plan</title>
+<meta content="Analysieren Sie Ihre vegane Ernährung auf wichtige Nährstoffe wie B12, Omega-3 und vollständige Proteine. Basierend auf wissenschaftlicher Bioverfügbarkeit." name="description"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* Dark theme scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a; /* slate-900 */
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155; /* slate-700 */
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569; /* slate-600 */
+    }
+    /* Fallback for Firefox */
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: #334155 #0f172a;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-inter antialiased">
+<!-- AUTH OVERLAY -->
+<div class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="auth-overlay">
+<div class="glass-card w-full max-w-md p-8 rounded-3xl border border-slate-800 shadow-2xl bg-slate-900/80 relative">
+<button class="absolute top-5 right-5 text-slate-400 hover:text-slate-100 transition-colors" id="btn-close-auth" title="Schließen">
+<svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+</button>
+<div class="text-center mb-8">
+<div class="inline-flex items-center justify-center p-4 bg-emerald-500/10 rounded-2xl mb-4 ring-1 ring-emerald-500/30">
+<span class="text-4xl">🔬</span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight">Vegan<span class="text-emerald-400">Diät</span>Analysator</h1>
+<p class="text-slate-400 text-sm mt-2">Melden Sie sich an, um Ihre personalisierte Datenbank und Ihr Logbuch in der Cloud zu nutzen.</p>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-sm text-slate-300 mb-1">E-Mail-Adresse</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm" id="auth-email" type="email"/>
+</div>
+<div>
+<label class="block text-sm text-slate-300 mb-1">Passwort</label>
+<div class="relative">
+<input class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 pr-12 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm" id="auth-password" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-emerald-400 transition-colors" id="toggle-password-btn" type="button">
+<svg class="lucide lucide-eye" fill="none" height="18" id="eye-icon" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+</button>
+</div>
+</div>
+<div class="hidden text-red-400 text-sm text-center bg-red-950/30 p-2 rounded-lg border border-red-500/20" id="auth-error"></div>
+<div class="flex justify-end">
+<button class="text-xs text-slate-500 hover:text-emerald-400 transition-colors" id="btn-reset-password">Passwort vergessen?</button>
+</div>
+<div class="space-y-3 pt-4">
+<div class="flex gap-3">
+<button class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)]" id="btn-login">Login</button>
+<button class="flex-1 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold py-3 rounded-xl transition-all border border-slate-700 hover:border-emerald-500/50" id="btn-register">Registrieren</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-10" id="app">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left Column: Input -->
+<aside class="lg:col-span-4 space-y-4">
+<header class="mb-4 text-left">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-3">
+<div class="inline-flex items-center justify-center p-2 bg-emerald-500/10 rounded-xl ring-1 ring-emerald-500/30">
+<span class="text-2xl">🔬</span>
+</div>
+<h1 class="text-xl md:text-2xl font-bold tracking-tight">Vegan<span class="text-emerald-400">Diät</span>Analysator</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-sm text-emerald-950 font-bold bg-emerald-500 px-3 py-1.5 rounded-lg hover:bg-emerald-400 transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)] hover:scale-105 active:scale-95 border border-emerald-400" id="btn-show-login">Login</button>
+<button class="hidden text-[10px] text-slate-400 hover:text-red-400 px-2 py-1 rounded-md hover:bg-slate-800 transition-colors" id="btn-logout">Abmelden</button>
+</div>
+</div>
+<p class="text-slate-300 text-[10px] leading-relaxed">Optimieren Sie Ihre pflanzliche Ernährung mit kritischen Markern.</p>
+</header>
+<!-- User Profile Card -->
+<section class="glass-card p-4 rounded-2xl" id="profile-card">
+<div class="flex items-center justify-between mb-2">
+<h2 class="text-base font-bold flex items-center">
+<span class="mr-2 text-sm">👤</span> <span id="profile-name">Gast (lokal)</span>
+</h2>
+</div>
+<div class="space-y-2">
+<div>
+<div class="flex justify-between items-center mb-1">
+<label class="block text-xs text-slate-300" for="weight-input">Gewicht (kg)</label>
+<span class="text-[10px] text-slate-300 font-medium">Proteinbedarf: 1,08 g/kg</span>
+</div>
+<input class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm" id="weight-input" type="number" value="75"/>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-800/50">
+<label class="block text-xs text-slate-300 mb-2">Zu überwachende Nährstoffe</label>
+<div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400" id="nutrient-tracker-settings">
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="protein"/>
+<span>Protein</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="b12"/>
+<span>B12</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="ala"/>
+<span>ALA (Omega-3)</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="iron"/>
+<span>Eisen</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="calcium"/>
+<span>Kalzium</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="zinc"/>
+<span>Zink</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="iodine"/>
+<span>Jod</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer hover:text-slate-200 transition-colors">
+<input checked="" class="form-checkbox text-emerald-500 rounded bg-slate-900 border-slate-700 focus:ring-emerald-500" type="checkbox" value="selenium"/>
+<span>Selen</span>
+</label>
+</div>
+</div></div>
+</section>
+<!-- Food Logger Card -->
+<section class="glass-card p-4 rounded-2xl" id="logger-card">
+<h2 class="text-lg font-bold mb-3 flex items-center">
+<span class="mr-2">🥗</span>Essen hinzufügen</h2>
+<div class="space-y-3">
+<!-- Search & Filter -->
+<div class="relative">
+<input class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 pl-10 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm" id="food-search" placeholder="Produkte suchen..." type="text"/>
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+</div>
+</div>
+<!-- Food List Overview -->
+<div class="bg-slate-900/50 rounded-lg border border-slate-800 overflow-hidden">
+<ul class="max-h-[220px] overflow-y-auto custom-scrollbar divide-y divide-slate-800/50" id="food-list">
+<!-- Dynamically populated list items -->
+</ul>
+</div>
+<!-- Add Selected Button -->
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm" disabled="" id="add-selected-btn">Ausgewählte hinzufügen</button>
+</div>
+<div class="mt-4 border-t border-slate-800/50 pt-3">
+<h3 class="text-lg font-bold mb-3 flex items-center">Aktuelle Auswahl</h3>
+<ul class="divide-y divide-slate-800/50 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar" id="food-log-list">
+<!-- Log entries -->
+</ul>
+</div>
+</section>
+</aside>
+<!-- Right Column: Results -->
+<main class="lg:col-span-8 space-y-3">
+<!-- Navigation Toggles -->
+<div class="flex gap-2 p-1.5 bg-slate-900/80 rounded-2xl border border-slate-800/80 backdrop-blur-sm">
+<button class="flex-1 bg-slate-800 text-emerald-400 text-sm font-bold py-2 rounded-xl transition-all flex items-center justify-center ring-1 ring-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.1)]" id="nav-dashboard-btn">
+<span class="mr-2">📊</span>Armaturenbrett</button>
+<button class="flex-1 text-slate-400 text-sm font-medium py-2 rounded-xl transition-all flex items-center justify-center hover:bg-slate-800/50 hover:text-slate-300" id="nav-database-btn">
+<span class="mr-2">🛠️</span>Datenbankverwaltung</button>
+<button class="flex-1 text-slate-400 text-sm font-medium py-2 rounded-xl transition-all flex items-center justify-center hover:bg-slate-800/50 hover:text-slate-300" id="nav-guide-btn">
+<span class="mr-2">📖</span>Führung</button>
+</div>
+<!-- DASHBOARD VIEW -->
+<div class="space-y-6 animate-fadeIn" id="dashboard-view">
+<!-- Nutrient Dashboard -->
+<section class="glass-card p-8 rounded-3xl">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+<h2 class="text-2xl font-bold">Nährstoffstatus</h2>
+<div class="flex gap-4">
+<div class="flex items-center text-sm text-slate-500">
+<span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span>OK</div>
+<div class="flex items-center text-sm text-slate-500">
+<span class="w-3 h-3 rounded-full bg-amber-500 mr-2"></span>Aufmerksamkeit</div>
+</div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+<!-- Circular indicators for key nutrients -->
+<div class="nutrient-stat" data-nutrient="protein">
+<div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+<canvas id="protein-chart"></canvas>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl sm:text-2xl font-bold text-white" id="protein-percent">0%</span>
+<span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter">Protein</span>
+</div>
+</div>
+<p class="text-center text-xs text-slate-300 font-medium" id="protein-value">0 / 0g</p>
+</div>
+<div class="nutrient-stat" data-nutrient="b12">
+<div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+<canvas id="b12-chart"></canvas>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl sm:text-2xl font-bold text-white" id="b12-percent">0%</span>
+<span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter">B12</span>
+</div>
+</div>
+<p class="text-center text-xs text-slate-300 font-medium" id="b12-value">0 / 2,8 μg</p>
+</div>
+<div class="nutrient-stat" data-nutrient="ala">
+<div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+<canvas id="ala-chart"></canvas>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl sm:text-2xl font-bold text-white" id="ala-percent">0%</span>
+<span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter text-center">ALA<span class="text-emerald-400 block -mt-1 text-center">(OMEGA-3)</span></span>
+</div>
+</div>
+<p class="text-center text-xs text-slate-300 font-medium" id="ala-value">0/1,6g</p>
+</div>
+<div class="nutrient-stat" data-nutrient="iron">
+<div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+<canvas id="iron-chart"></canvas>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl sm:text-2xl font-bold text-white" id="iron-percent">0%</span>
+<span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter">Eisen</span>
+</div>
+</div>
+<p class="text-center text-xs text-slate-300 font-medium" id="iron-value">0/14 mg</p>
+</div>
+</div>
+<div class="mt-10 pt-10 border-t border-slate-800/50">
+<h3 class="text-lg font-bold mb-6 flex items-center"><span class="mr-2">📊</span>Andere Vitamine und Mineralien</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-300 font-medium">Kalzium</span>
+<span class="font-medium text-emerald-100" id="calcium-summary">0/1000 mg</span>
+</div>
+<div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 transition-all duration-500" id="calcium-bar" style="width: 0%"></div>
+</div>
+</div>
+<div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-300 font-medium">Zink</span>
+<span class="font-medium text-sky-100" id="zinc-summary">0/11 mg</span>
+</div>
+<div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-sky-500 transition-all duration-500" id="zinc-bar" style="width: 0%"></div>
+</div>
+</div>
+<div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-300 font-medium">Jod</span>
+<span class="font-medium text-indigo-100" id="iodine-summary">0/150μg</span>
+</div>
+<div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-indigo-500 transition-all duration-500" id="iodine-bar" style="width: 0%"></div>
+</div>
+</div>
+<div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+<div class="flex justify-between text-sm mb-2">
+<span class="text-slate-300 font-medium">Selen</span>
+<span class="font-medium text-purple-100" id="selenium-summary">0/55μg</span>
+</div>
+<div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-purple-500 transition-all duration-500" id="selenium-bar" style="width: 0%"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Insights & Tips -->
+<section class="glass-card p-5 rounded-3xl" id="insights-panel">
+<h2 class="text-xl font-bold mb-3 flex items-center">
+<span class="mr-2">💡</span>Intelligente Analysen und Tipps</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="insights-container">
+<div class="col-span-full p-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700 text-center text-slate-500 italic text-sm">Fügen Sie Lebensmittel hinzu, um eine Analyse zu erstellen...</div>
+</div>
+</section>
+</div> <!-- End Dashboard View -->
+<!-- DATABASE VIEW -->
+<div class="space-y-6 hidden animate-fadeIn" id="database-view">
+<!-- Custom Food Database Card -->
+<section class="glass-card p-8 rounded-3xl" id="custom-food-card">
+<h2 class="text-2xl font-bold mb-6 flex items-center">
+<span class="mr-2">➕</span>Produkt hinzufügen/bearbeiten</h2>
+<!-- Manual Form (Always Visible) -->
+<div class="space-y-4" id="custom-food-form">
+<div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+<div class="mb-4">
+<h3 class="text-xs font-semibold text-slate-200 uppercase tracking-widest mb-2">Intelligenter Scanner (KI)</h3>
+<p class="text-[11px] text-slate-200 mb-2">Fügen Sie Text aus einer Beschriftung ein, um Werte automatisch auszufüllen:</p>
+<textarea class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none mb-2 text-slate-100" id="ai-import-text" placeholder="Z.B.: Energie 120kcal, Protein 15g, B12 3,8mcg..." rows="2"></textarea>
+<button class="w-full bg-slate-800 hover:bg-slate-700 text-[11px] py-2 rounded-lg transition-all text-slate-200" id="smart-parse-btn">Starten Sie den automatischen Scan</button>
+</div>
+<div class="space-y-3 pt-4 border-t border-slate-800/50">
+<h3 class="text-xs font-semibold text-slate-200 uppercase tracking-widest mb-1">Produktdetails</h3>
+<input id="custom-edit-id" type="hidden" value=""/>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-name" placeholder="Name des Produkts" type="text"/>
+<textarea class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-ingredients" placeholder="Zutatenliste (optional)" rows="2"></textarea>
+<div class="pt-2">
+<div class="flex justify-between items-end mb-2">
+<h3 class="text-xs font-semibold text-slate-200 uppercase tracking-widest">Nährwerte</h3>
+<span class="text-[10px] text-slate-200 italic">Pro 100g / 100ml</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">Protein (g)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-protein" step="0.1" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">B12 (μg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-b12" step="0.01" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">ALA (mg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-ala" step="1" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">Eisen (mg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-iron" step="0.1" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">Kalzium (mg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-calcium" step="1" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">Zink (mg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-zinc" step="0.1" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">Jod (μg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-iodine" step="1" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] text-slate-200 ml-1">Selen (μg)</label>
+<input class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100" id="custom-selenium" step="1" type="number"/>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-3 rounded-xl mt-6 transition-all shadow-lg shadow-emerald-900/20" id="save-custom-btn">Produkt in der Datenbank speichern</button>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-slate-800/50">
+<button class="text-[11px] text-slate-200 hover:text-emerald-400 transition-colors flex items-center gap-1 font-semibold tracking-wider" id="toggle-tsv-form">
+<span>🛠️</span>BULK-IMPORT (TSV/EXCEL)</button>
+<div class="hidden mt-4 animate-fadeIn" id="tsv-import-form">
+<div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+<p class="text-xs text-slate-200 mb-3">TSV-Daten einfügen (Name [Tab] Zutaten [Tab] ...):</p>
+<textarea class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none mb-2 font-mono text-slate-100" id="tsv-import-text" placeholder="Name Zutaten Protein B12...
+Haferdrinkwasser, Hafer... 1,1 0,38" rows="5"></textarea>
+<button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2 rounded-lg transition-all" id="process-tsv-btn">TSV-Liste importieren</button>
+<p class="text-[10px] text-slate-500 mt-2 italic">Überschriften werden automatisch abgeglichen (Name, Protein, B12, ALA, Eisen, Kalzium usw.)</p>
+</div>
+</div>
+</div>
+<!-- Stored Products List -->
+<div class="mt-8 pt-8 border-t border-slate-800/50">
+<h3 class="text-lg font-bold mb-4 flex items-center">
+<span class="mr-2">📋</span>Gespeicherte Produkte</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800/50">
+<thead class="bg-slate-800/50 text-[10px] uppercase tracking-wider text-slate-400">
+<tr>
+<th class="px-4 py-3">Produkt</th>
+<th class="px-4 py-3">Protein</th>
+<th class="px-4 py-3">B12</th>
+<th class="px-4 py-3">ALA</th>
+<th class="px-4 py-3">Fe</th>
+<th class="px-4 py-3">Ca</th>
+<th class="px-4 py-3 text-right">Aktionen</th>
+</tr>
+</thead>
+<tbody class="text-xs divide-y divide-slate-800/50" id="database-products-list">
+<!-- Dynamically populated -->
+</tbody>
+</table>
+</div>
+</div></section>
+</div> <!-- End Database View -->
+<!-- GUIDE VIEW -->
+<!-- GUIDE VIEW -->
+<!-- GUIDE VIEW -->
+<div class="space-y-6 hidden animate-fadeIn" id="guide-view">
+<section class="glass-card p-6 md:p-10 rounded-[2rem] shadow-2xl border border-white/5">
+<div class="max-w-4xl mx-auto prose prose-invert prose-emerald">
+<h1 class="text-2xl md:text-3xl font-bold text-emerald-500 mb-6"><strong class="text-emerald-100">Die Ernährungsarchitektur der veganen Ernährung: Ein umfassender Leitfaden zur Stoffwechseloptimierung und Mangelprävention</strong></h1>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Der Übergang zu einer veganen Ernährung wird in der heutigen Ernährungswissenschaft nicht mehr nur als eine ethische oder ökologische Entscheidung betrachtet, sondern als komplexe Ernährungsintervention, die bei korrekter Umsetzung erhebliche physiologische Vorteile bietet. Klinische Analysen zeigen, dass eine gut geplante pflanzliche Ernährung das Auftreten chronischer Erkrankungen wie Typ-2-Diabetes, Bluthochdruck und bestimmter Formen von Neoplasien deutlich reduzieren kann.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span>Der Verzicht auf alle tierischen Produkte bringt jedoch besondere Herausforderungen hinsichtlich der Bioverfügbarkeit von Mikronährstoffen und der Homöostase essentieller Fettsäuren mit sich.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span>Eine erfolgreiche Umsetzung erfordert ein tiefes Verständnis der Stoffwechselwege, der enzymatischen Konkurrenz und der mikrobiologischen Herkunft essentieller Vitamine.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span>Dieser Bericht bietet eine umfassende Analyse der kritischen Nährstoffe im veganen Spektrum mit besonderem Schwerpunkt auf Vitamin B12, Omega-3-Fettsäuren, Proteinqualität, Vitamin K2 und relevanten Spurenelementen und übersetzt theoretische Physiologie in praktische Nahrungsquellen und Logistikstrategien.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Die biochemische Notwendigkeit von Vitamin B12</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Vitamin B12 oder Cobalamin stellt die kritischste Nährstoffgrenze für die vegane Bevölkerung dar. Es ist ein wasserlösliches Vitamin, das eine zentrale Rolle bei der DNA-Synthese, der Bildung roter Blutkörperchen und der Aufrechterhaltung des Zentralnervensystems spielt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(12)</span>Im Gegensatz zu den meisten Vitaminen wird Cobalamin ausschließlich von Bakterien und Archaeen produziert; Pflanzen verfügen nicht über die notwendigen Stoffwechselwege, um diesen Cofaktor zu synthetisieren.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span>Infolgedessen ist das natürliche Vorkommen von B12 in nicht angereicherten pflanzlichen Lebensmitteln praktisch gleich Null, was eine Nahrungsergänzung oder den Verzehr angereicherter Produkte zu einer absoluten Notwendigkeit macht, um irreversiblen neurologischen Schäden vorzubeugen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Stoffwechsel, Absorption und Biomarker</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Der menschliche Aufnahmemechanismus von Vitamin B12 ist einzigartig und äußerst komplex. Im Magen wird Cobalamin durch Magensäure und Pepsin von Nahrungsproteinen getrennt und bindet anschließend an Haptocorrin.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(13)</span>Im Zwölffingerdarm wird das Vitamin dann an den Intrinsic Factor (IF) gebunden, ein Glykoprotein, das von den Belegzellen der Magenwand produziert wird.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(12)</span>Der B12-IF-Komplex wird schließlich über spezifische Rezeptoren im terminalen Ileum aufgenommen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span>Die Kapazität dieses sättigbaren Transportsystems ist auf etwa 1,5 bis 2,0 µg pro Mahlzeit begrenzt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(12)</span>Für Veganer ist es daher effektiver, kleine Mengen über den Tag verteilt einzunehmen, beispielsweise durch angereicherte Sojamilch, als eine einzige große Dosis, es sei denn, diese Dosis ist groß genug, um über passive Diffusion in den Blutkreislauf zu gelangen (etwa 1 % der Dosis).<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></p>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die physiologische B12-Reserve in der Leber kann zwischen 2 und 5 Milligramm schwanken, was einen Mangel oft über Jahre hinweg verschleiert.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span>Wenn die Vorräte aufgebraucht sind, steigen die Konzentrationen von Methylmalonsäure (MMA) und Homocystein an, was auf eine Stoffwechselblockade auf zellulärer Ebene hinweist.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span>Eine frühzeitige Diagnose durch Blutuntersuchungen ist von entscheidender Bedeutung, da erste Symptome wie Müdigkeit und kognitiver Verfall oft auf Stress zurückzuführen sind.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span></p>
+<div class="overflow-x-auto my-8">
+<table class="w-full text-xs text-left text-slate-300 border-collapse bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/50">
+<tr class="bg-emerald-950/40 text-emerald-400 font-bold border-b border-emerald-900/30">
+<th class="px-5 py-4">Besonderheit</th>
+<th class="px-5 py-4">Details zu Vitamin B12 (Cobalamin)</th>
+<th class="px-5 py-4">Zitat</th>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Tagesbedarf (RDA)</td>
+<td class="px-5 py-4">2,8 µg für Erwachsene; bis zu 3,8 µg während der Stillzeit</td>
+<td class="px-5 py-4"><span class="text-emerald-500/60">(11)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Primäre vegane Quellen</td>
+<td class="px-5 py-4">Angereicherte Sojamilch, Nährhefe (angereichert), Nahrungsergänzungsmittel</td>
+<td class="px-5 py-4"><span class="text-emerald-500/60">(4)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Absorptionshemmer</td>
+<td class="px-5 py-4">Magensäurehemmer, Alkohol, bestimmte Darmerkrankungen</td>
+<td class="px-5 py-4"><span class="text-emerald-500/60">(1)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Folgen des Mangels</td>
+<td class="px-5 py-4">Megaloblastäre Anämie, Nervendemyelinisierung</td>
+<td class="px-5 py-4"><span class="text-emerald-500/60">(1)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Speicherort</td>
+<td class="px-5 py-4">Leber (Versorgung für 3 bis 5 Jahre)</td>
+<td class="px-5 py-4"><span class="text-emerald-500/60">(2)</span></td>
+</tr>
+</table>
+</div>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Analyse pflanzlicher „Quellen“ und Pseudo-B12</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Ein anhaltendes Missverständnis innerhalb der veganen Gemeinschaft ist die angebliche Anwesenheit von B12 in Produkten wie Spirulina, Chlorella und fermentiertem Soja (Tempeh).<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Wissenschaftliche Untersuchungen haben gezeigt, dass diese Quellen häufig „Pseudo-B12“ (Cobamide) enthalten, Moleküle, die Cobalamin chemisch ähnlich sind, aber beim Menschen keine biologische Aktivität zeigen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Tatsächlich können diese Analoga die Absorption von echtem B12 blockieren, indem sie die IF-Rezeptoren besetzen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Chlorella-Pastillen können aufgrund ihres Eisen- oder Proteingehalts nützlich sein, sollten jedoch niemals als primäre B12-Quelle betrachtet werden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Die einzigen zuverlässigen veganen Quellen sind Produkte mit explizitem Zusatz von Cyanocobalamin oder Methylcobalamin oder hochwertige Nahrungsergänzungsmittel.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Omega-3-Fettsäuren: Der enzymatische Kampf um die Umwandlung</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Der Fettsäurehaushalt einer veganen Ernährung ist durch einen Überfluss an Alpha-Linolensäure (ALA) und einen möglichen Mangel an den langkettigen Fettsäuren Eicosapentaensäure (EPA) und Docosahexaensäure (DHA) gekennzeichnet.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span>EPA und DHA sind für die Herz-Kreislauf-Gesundheit, die Integrität der retinalen Photorezeptoren und die Membranflüssigkeit in der Großhirnrinde von wesentlicher Bedeutung.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(8)</span>Da diese Fettsäuren vor allem in fettem Fisch vorkommen, ist der Veganer auf die körpereigene Biosynthese aus ALA angewiesen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Der Konversionspfad und die Wirkung von Omega-6</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die Umwandlung von ALA in EPA und dann in DHA erfolgt in der Leber durch eine Reihe von Entsättigungs- und Verlängerungsschritten, wobei die Enzyme Delta-6-Desaturase und Delta-5-Desaturase die Geschwindigkeit bestimmen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span>Ein entscheidender Faktor in diesem Prozess ist die Konkurrenz mit Linolsäure (LA), einer Omega-6-Fettsäure, die in Sojaöl, Sonnenblumenöl und vielen verarbeiteten Produkten reichlich vorhanden ist.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(7)</span>Da beide Fettsäurefamilien um die gleichen Enzyme konkurrieren, führt eine hohe Zufuhr von Omega-6 zu einer drastischen Verringerung der Omega-3-Umwandlung.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span></p>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Klinische Daten deuten darauf hin, dass die Umwandlungsrate von ALA zu EPA bei gesunden Erwachsenen zwischen 5 und 10 % liegt, während die Umwandlung zu DHA oft weniger als 2 bis 5 % beträgt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span>Bei Personen, die große Mengen Sojamilch konsumieren (z. B. 750 ml pro Tag), kann die hohe Konzentration an Linolsäure in der Soja tatsächlich die Synthese von DHA blockieren.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Dieses Phänomen erklärt, warum Veganer trotz ausreichender ALA-Zufuhr über Walnüsse oder Leinsamen häufig niedrigere Plasma- und Gewebekonzentrationen von EPA/DHA aufweisen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span></p>
+<div class="overflow-x-auto my-8">
+<table class="w-full text-xs text-left text-slate-300 border-collapse bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/50">
+<tr class="bg-emerald-950/40 text-emerald-400 font-bold border-b border-emerald-900/30">
+<th class="px-5 py-4">Fettsäure</th>
+<th class="px-5 py-4">Typ</th>
+<th class="px-5 py-4">Vegane Ressourcen</th>
+<th class="px-5 py-4">Mindest-RDA</th>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4"><strong class="text-emerald-100">Alpha</strong>-Linolensäure (ALA)</td>
+<td class="px-5 py-4">Omega-3 (kurz)</td>
+<td class="px-5 py-4">Leinsamen, Walnüsse, Chia, Rapsöl</td>
+<td class="px-5 py-4">1,1 - 1,6 g<span class="text-emerald-500/60">(8)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Eicosapentaensäure (EPA)</td>
+<td class="px-5 py-4">Omega-3 (lang)</td>
+<td class="px-5 py-4">Algenöl, Algen (Sporen)</td>
+<td class="px-5 py-4">250 mg (kombiniert)<span class="text-emerald-500/60">(6)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Docosahexaensäure (DHA)</td>
+<td class="px-5 py-4">Omega-3 (lang)</td>
+<td class="px-5 py-4">Algenöl, Algen (Sporen)</td>
+<td class="px-5 py-4">250 mg (kombiniert)<span class="text-emerald-500/60">(6)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Linolsäure (LA)</td>
+<td class="px-5 py-4">Omega-6</td>
+<td class="px-5 py-4">Sojaöl, Sonnenblumenöl, Erdnüsse</td>
+<td class="px-5 py-4">2 % der Kalorien<span class="text-emerald-500/60">(8)</span></td>
+</tr>
+</table>
+</div>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Algenöl: Die sofortige Lösung</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Um die ineffiziente Umwandlung und enzymatische Konkurrenz zu umgehen, ist der Verzehr von Algenöl die wirksamste Maßnahme. Mikroalgen wie *Schizochytrium sp.* produzieren direkt große Mengen an EPA und DHA.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span>Durch die Verwendung von Algenöl nimmt der Veganer die ursprüngliche Quelle dieser Fettsäuren zu sich, da Fische diese erst durch den Verzehr dieser Algen enthalten.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span>Hochwertige Algenölpräparate liefern die Fettsäuren in der Triglyceridform (TG), was zu einer besseren Bioverfügbarkeit im Vergleich zur Ethylesterform (EE) führt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></p>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Neben Algenöl gibt es Landpflanzen, die geringe Mengen EPA enthalten, wie zum Beispiel Portulak (Portulak).<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Obwohl Portulak anderen Blattgemüsen überlegen ist, reicht sein Gehalt nicht aus, um als einzige Quelle aktiver Fischfettsäuren zu dienen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Für einen optimalen Zustand ist es ratsam, die ALA-Aufnahme durch Leinsamenöl zu maximieren (ein Esslöffel enthält etwa 7 g ALA) und die Omega-6-Aufnahme zu begrenzen, indem Sie sich für Rapsöl oder Olivenöl anstelle von Sonnenblumenöl entscheiden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(8)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Proteinstoffwechsel und Aminosäureprofile</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die Diskussion über Protein in einer veganen Ernährung hat sich von der Frage, ob „genügend“ Protein vorhanden ist, hin zur Analyse der Aminosäurezusammensetzung und Verdaulichkeit verlagert.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span>Proteine ​​bestehen aus zwanzig Aminosäuren, von denen neun für den Menschen essentiell sind.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span>Tierische Proteine ​​gelten im Allgemeinen als „vollständig“, da ihr Aminosäureprofil den menschlichen Bedürfnissen weitgehend entspricht.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(10)</span>Pflanzliche Proteine ​​weisen häufig limitierende Aminosäuren auf; Getreide ist beispielsweise oft arm an Lysin, während Hülsenfrüchte arm an Methionin sind.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Die 30 %-Erhöhungsregel für Veganer</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Eine entscheidende Erkenntnis für die klinische Praxis ist, dass der Proteinbedarf von Veganern etwa 30 % höher ist als der von Allesfressern.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(10)</span>Dies ist auf zwei Faktoren zurückzuführen: die geringere biologische Wertigkeit einzelner Pflanzenproteine ​​und die verringerte Verdaulichkeit aufgrund des Vorhandenseins von Ballaststoffen und Antinährstoffen in der Pflanzenmatrix.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(3)</span>Für einen Veganer wird eine Zufuhr von 1,08 Gramm Protein pro Kilogramm Körpergewicht empfohlen, was bei einer 70 kg schweren Person 76 Gramm pro Tag entspricht.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(10)</span></p>
+<div class="overflow-x-auto my-8">
+<table class="w-full text-xs text-left text-slate-300 border-collapse bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/50">
+<tr class="bg-emerald-950/40 text-emerald-400 font-bold border-b border-emerald-900/30">
+<th class="px-5 py-4">Produkt</th>
+<th class="px-5 py-4">Proteingehalt pro Portion</th>
+<th class="px-5 py-4">Qualitäts-/Aminosäureprofil</th>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Seitan</td>
+<td class="px-5 py-4">24,8g (pro 100g)</td>
+<td class="px-5 py-4">Sehr hoch, aber arm an Lysin<span class="text-emerald-500/60">(10)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Tofu</td>
+<td class="px-5 py-4">11,6g (pro 100g)</td>
+<td class="px-5 py-4">Vollständiges Aminosäureprofil<span class="text-emerald-500/60">(10)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Tempeh</td>
+<td class="px-5 py-4">19,0g (pro 100g)</td>
+<td class="px-5 py-4">Komplett, fermentiert (bioverfügbar)<span class="text-emerald-500/60">(19)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Linsen (gekocht)</td>
+<td class="px-5 py-4">9,0g (pro 100g)</td>
+<td class="px-5 py-4">Reich an Lysin und Ballaststoffen<span class="text-emerald-500/60">(9)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Erdnussbutter</td>
+<td class="px-5 py-4">5,3g (pro 20g)</td>
+<td class="px-5 py-4">Gute Kalorien- und Proteinquelle<span class="text-emerald-500/60">(10)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Haferflocken</td>
+<td class="px-5 py-4">5,1g (pro 40g)</td>
+<td class="px-5 py-4">Gute Basis, reich an B-Vitaminen<span class="text-emerald-500/60">(10)</span></td>
+</tr>
+</table>
+</div>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">No-Cook-Strategien für maximale Proteinaufnahme</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Für Personen, die nicht kochen, bietet der moderne Einzelhandel (z. B. Colruyt mit der Boni Plan't-Reihe) effektive Lösungen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(21)</span>Vorgekochte Hülsenfrüchte in Brik-Verpackung, wie zum Beispiel braune Linsen oder Kichererbsen, können direkt kalt zu Salaten oder geriebenem Gemüse hinzugefügt werden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Diese Produkte liefern nicht nur Proteine, sondern auch lebenswichtige Mineralien wie Eisen und Zink.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Darüber hinaus weisen fertige Fleischersatzprodukte auf Soja- oder Weizenbasis (Seitan) eine hohe Proteindichte auf, allerdings muss man auf den Salzgehalt achten.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(10)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Vitamin K2: Der Regulator des Kalziumhaushalts</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Während Vitamin K1 (Phyllochinon) in grünen Blattgemüsen wie Grünkohl und Spinat reichlich vorhanden ist, kommt Vitamin K2 (Menachinon) in einer pflanzlichen Ernährung deutlich seltener vor.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(2)</span>Der funktionelle Unterschied zwischen den beiden ist grundlegend: K1 wird in erster Linie von der Leber für die Synthese von Gerinnungsfaktoren verwendet, während K2 für die Aktivierung von Proteinen essentiell ist, die Kalzium zu den Knochen und von den Blutgefäßen weg transportieren.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(24)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Der Mechanismus der Calciumverteilung</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Vitamin K2 aktiviert Osteocalcin, ein Protein, das Kalzium in der Hydroxylapatitmatrix des Knochens bindet.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(26)</span>Gleichzeitig aktiviert es das Matrix-GLA-Protein (MGP), das die Verkalkung der Arterienwände und Weichteile hemmt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(25)</span>Ohne ausreichend K2 kann Kalzium selbst bei hoher Kalzium- und Vitamin-D-Zufuhr zu Arteriosklerose anstelle einer Knochenstärkung führen – ein Phänomen, das als „Kalziumparadoxon“ bekannt ist.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(25)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Fermentation als Quelle von MK-7</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die einzige nennenswerte vegane Vitamin-K2-Quelle sind fermentierte Lebensmittel.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Bakterien wie *Bacillus subtilis* wandeln bei der Fermentation von Soja die vorhandenen Nährstoffe in die MK-7-Form von K2 um.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(24)</span>Natto, ein traditionelles japanisches Sojagericht, ist der unbestrittene König von K2 mit einem hundertmal höheren Gehalt als Käse oder Sauerkraut.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(28)</span></p>
+<div class="overflow-x-auto my-8">
+<table class="w-full text-xs text-left text-slate-300 border-collapse bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/50">
+<tr class="bg-emerald-950/40 text-emerald-400 font-bold border-b border-emerald-900/30">
+<th class="px-5 py-4">Nahrungsmittel</th>
+<th class="px-5 py-4">K2-Gehalt pro 100g</th>
+<th class="px-5 py-4">Primäre Form</th>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Natto</td>
+<td class="px-5 py-4">900 - 1100 µg<span class="text-emerald-500/60">(28)</span></td>
+<td class="px-5 py-4">MK-7</td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Sauerkraut (roh/nicht pasteurisiert)</td>
+<td class="px-5 py-4">5 - 10 µg<span class="text-emerald-500/60">(9)</span></td>
+<td class="px-5 py-4">MK-7</td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Kimchi</td>
+<td class="px-5 py-4">~5 µg<span class="text-emerald-500/60">(29)</span></td>
+<td class="px-5 py-4">MK-7</td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Tempeh</td>
+<td class="px-5 py-4">Abwechselnd (niedrig)<span class="text-emerald-500/60">(20)</span></td>
+<td class="px-5 py-4">MK-7</td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Hartkäse (nicht-vegane Referenz)</td>
+<td class="px-5 py-4">35 - 75 µg<span class="text-emerald-500/60">(24)</span></td>
+<td class="px-5 py-4">MK-8, MK-9</td>
+</tr>
+</table>
+</div>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Für Veganer, die keinen Zugang zu Natto haben, ist rohes Sauerkraut eine wichtige tägliche Quelle.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Unbedingt Sauerkraut im Kühlregal (nicht pasteurisiert im Glas) kaufen, da Hitze die entstehenden Bakterien und Vitamine zerstört.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(24)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Eisen- und Zinkhomöostase: Synergie und Hemmung</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die Aufnahme von Mineralien in einer pflanzlichen Ernährung wird häufig durch Antinährstoffe wie Phytinsäure und Tannine behindert.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span>Eisen kommt in Pflanzen ausschließlich als Nicht-Häm-Eisen (Fe3+) vor, das chemisch weniger stabil und weniger löslich ist als das Häm-Eisen aus Fleisch.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Die katalytische Rolle von Vitamin C</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die Wirksamkeit der Eisenaufnahme kann durch die gleichzeitige Einnahme von Vitamin C (Ascorbinsäure) drastisch gesteigert werden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(4)</span>Vitamin C reduziert Eisen (Fe3+) in die Eisenform (Fe2+), die über das Transportprotein DMT1 die Darmwand leichter passiert.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span>Studien zeigen, dass die Zugabe von Vitamin-C-reichen Quellen zu einer Mahlzeit die Eisenaufnahme um das Sechsfache steigern kann.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span></p>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Praktische Kombinationen für einen optimalen Eisenstatus:</p>
+<ul class="mb-6 space-y-1">
+<li class="ml-6 mb-2 text-slate-300 list-decimal"><strong class="text-emerald-100">Linsen mit Paprika</strong>: Die hohe Konzentration an Vitamin C in Paprika optimiert die Eisenaufnahme aus den Linsen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span></li>
+<li class="ml-6 mb-2 text-slate-300 list-decimal"><strong class="text-emerald-100">Haferflocken mit Erdbeeren</strong>: Erdbeeren sorgen für den nötigen Ascorbinsäure-Boost für das Eisen im Haferflocken.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span></li>
+<li class="ml-6 mb-2 text-slate-300 list-decimal"><strong class="text-emerald-100">Apfelsirup und Orangensaft</strong>: (Apfel-)Sirup ist reich an Eisen und wird für maximale Wirksamkeit traditionell mit Vitamin-C-reichen Getränken kombiniert.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(33)</span></li>
+</ul>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Management von Inhibitoren</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Tannine in Tee und Kaffee sind starke Eisenhemmer; Der Verzehr während einer Mahlzeit kann die Absorption um mehr als 60 % reduzieren.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span>Daher ist es wichtig, diese Getränke mindestens eine Stunde vor oder nach den Mahlzeiten zu sich zu nehmen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span>Die Kalziumergänzung sollte auch von eisenreichen Mahlzeiten getrennt werden, um eine Konkurrenz um Transportproteine ​​zu vermeiden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(32)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Jod und Selen: Die bodenabhängigen Elemente</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Jod und Selen sind Spurenelemente, deren Konzentration in pflanzlichen Lebensmitteln direkt mit ihrem Vorkommen im Boden zusammenhängt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(11)</span>Für Veganer in Regionen mit kargen Böden, wie beispielsweise in weiten Teilen Europas, ist eine bewusste Strategie erforderlich.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(39)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Jod: Brot und Algen</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Jod ist entscheidend für die Synthese der Schilddrüsenhormone (T3 und T4), die den Grundstoffwechsel regulieren.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(38)</span>In Belgien und den Niederlanden ist Backsalz (mit Jod angereichertes Salz) die wichtigste Quelle für die Bevölkerung.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(39)</span>Veganer, die wenig Brot essen oder sich für ungesalzenes Bio-Brot entscheiden, haben ein erhöhtes Mangelrisiko.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(38)</span></p>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Nori-Blätter (für Sushi verwendet) sind eine ausgezeichnete vegane Quelle; Ein halbes Nori-Blatt liefert etwa 75 µg Jod, was die Hälfte der empfohlenen Tagesdosis abdeckt.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(38)</span>Es ist jedoch wichtig, einen übermäßigen Verzehr von Kelp (Kombu) zu vermeiden, da die extrem hohen Jodkonzentrationen schädlich für die Schilddrüse sein können.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(11)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Selen und die Kraft der Paranüsse</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Selen ist ein wesentlicher Bestandteil der antioxidativen Enzyme und unterstützt die Schilddrüsenfunktion.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(43)</span>Die konzentrierteste pflanzliche Quelle ist die Paranuss.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(37)</span>Eine einzelne Paranuss enthält durchschnittlich 50 bis 90 µg Selen, was der vollen empfohlenen Tagesmenge für Erwachsene entspricht.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(44)</span>Aufgrund der Gefahr einer Selentoxizität (Selenose) wird dringend empfohlen, den Verzehr auf maximal zwei Nüsse pro Tag zu beschränken.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(37)</span></p>
+<div class="overflow-x-auto my-8">
+<table class="w-full text-xs text-left text-slate-300 border-collapse bg-slate-900/40 rounded-2xl overflow-hidden border border-slate-800/50">
+<tr class="bg-emerald-950/40 text-emerald-400 font-bold border-b border-emerald-900/30">
+<th class="px-5 py-4">Mineral</th>
+<th class="px-5 py-4">Funktion</th>
+<th class="px-5 py-4">Vegane Quelle</th>
+<th class="px-5 py-4">Bemerkung</th>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Jod</td>
+<td class="px-5 py-4">Schilddrüse, Stoffwechsel</td>
+<td class="px-5 py-4">Nori, jodiertes Salz</td>
+<td class="px-5 py-4">Nori ist in Sicherheit; Seetang in Maßen<span class="text-emerald-500/60">(38)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Selen</td>
+<td class="px-5 py-4">Antioxidans, Immunität</td>
+<td class="px-5 py-4">Paranüsse, Chiasamen</td>
+<td class="px-5 py-4">Maximal 2 Paranüsse/Tag<span class="text-emerald-500/60">(44)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Zink</td>
+<td class="px-5 py-4">Zellteilung, Immunität</td>
+<td class="px-5 py-4">Kürbiskerne, Hafer</td>
+<td class="px-5 py-4">Das Einweichen der Samen verbessert die Aufnahme<span class="text-emerald-500/60">(11)</span></td>
+</tr>
+<tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+<td class="px-5 py-4">Eisen</td>
+<td class="px-5 py-4">Sauerstofftransport</td>
+<td class="px-5 py-4">Linsen, Tofu, Spinat</td>
+<td class="px-5 py-4">Immer mit Vitamin C kombinieren<span class="text-emerald-500/60 font-medium ml-0.5">(32)</span></td>
+</tr>
+</table>
+</div>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Implementierung und Einzelhandelslogistik: Das Colruyt-Modell</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Für den modernen Veganer, der Wert auf Schnelligkeit und Budgetfreundlichkeit legt, bieten Supermarktketten wie Colruyt mit Hausmarken wie Everyday und Boni Plan't einen zugänglichen Rahmen.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Optimierung der Sojaaufnahme und des Omega-Gleichgewichts</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Wer täglich 750 ml Everyday-Sojamilch trinkt, versorgt sich mit etwa 26 g Protein und 2,8 µg Vitamin B12.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Um die damit verbundene hohe Omega-6-Belastung auszugleichen, muss die ALA-Zufuhr aggressiv erhöht werden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span>Leinöl (Boni Bio) ist hier die kostengünstigste Lösung; Durch das Verteilen eines Esslöffels kalt über die Mahlzeit wird die Stoffwechselkonkurrenz zugunsten der Omega-3-Fettsäuren beeinflusst.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></p>
+<h3 class="text-lg font-semibold text-emerald-300/80 mt-6 mb-2"><strong class="text-emerald-100">Kochfreier Speiseplan für Veganer</strong></h3>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Die Kombination von rohem Gemüse mit proteinreicher Konfitüre bildet die Grundlage für eine ernährungsphysiologisch vollwertige Ernährung ohne Kochzeit:</p>
+<ul class="mb-6 space-y-1">
+<li class="ml-6 mb-2 text-slate-300 list-disc"><strong class="text-emerald-100">Basic</strong>: Geriebener Weißkohl (Boni) und geriebener Knollensellerie (Boni). Diese liefern Vitamin C und Ballaststoffe.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></li>
+<li class="ml-6 mb-2 text-slate-300 list-disc"><strong class="text-emerald-100">Protein</strong>: Braune Linsen (Boni Plan't brik) oder weiße Bohnen (Hak). Diese können direkt gemischt werden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></li>
+<li class="ml-6 mb-2 text-slate-300 list-disc"><strong class="text-emerald-100">Fette und Omega-3</strong>: Alltagsmayonnaise (auf Rapsölbasis), gemischt mit extra Leinöl und einer Handvoll Walnüssen (Boni).<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></li>
+<li class="ml-6 mb-2 text-slate-300 list-disc"><strong class="text-emerald-100">Mikronährstoffe</strong>: Fügen Sie rohes Sauerkraut hinzu (tägliches Glas, kalt verzehrt) für Vitamin K2 und Probiotika.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></li>
+</ul>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Diese Mahlzeitenstruktur deckt den Proteinbedarf, optimiert den Fettsäurehaushalt und liefert wichtige Vitamine, während die Kosten durch die Verwendung von Eigenmarken minimal gehalten werden.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(9)</span></p>
+<h2 class="text-xl font-bold text-emerald-400 mt-10 mb-4 border-b border-emerald-900/30 pb-2"><strong class="text-emerald-100">Abschluss</strong></h2>
+<p class="mb-4 text-slate-300 leading-relaxed text-sm">Eine vegane Ernährung ist klinisch sinnvoll und präventiv wirksam, vorausgesetzt, die Ernährungsarchitektur basiert auf wissenschaftlichen Prinzipien der Bioverfügbarkeit und des Stoffwechselwettbewerbs.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(1)</span>Die wesentlichen Säulen – Vitamin-B12-Supplementierung, direkte Omega-3-Quellen (Algenöl), die 30-prozentige Proteinkorrektur sowie die gezielte Einnahme von Vitamin K2 und Spurenelementen – bilden zusammen eine solide Grundlage für langfristige Vitalität.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(6)</span>Durch die Nutzung der Synergie zwischen Lebensmittelarten und den strategischen Einsatz angereicherter Produkte und Nahrungsergänzungsmittel kann ein veganer Lebensstil in allen Lebensphasen einen optimalen Gesundheitszustand gewährleisten.<span class="text-xs text-emerald-500/60 font-medium ml-0.5">(2)</span></p>
+<p class="mt-12 mb-4 text-slate-300 leading-relaxed text-sm font-bold border-t border-slate-800/50 pt-8">#### <strong class="text-emerald-100">Zitierte Werke</strong></p>
+<ul class="mb-6 space-y-2">
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(1)</span>Die Bedeutung von Vitamin B12 für Personen, die sich für eine pflanzliche Ernährung entscheiden, [https://d-nb.info/1287582591/34](https://d-nb.info/1287582591/34)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(2)</span>Vitamin K – Niederländischer Verband für Veganismus, [https://www.veganisme.org/informatie/voedingsstoffen/vitamine-k/](https://www.veganisme.org/informatie/voedingsstoffen/vitamine-k/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(3)</span>Möchten Sie wissen, welche Nährstoffe Ihnen als Veganer fehlen? - Bonusan, [https://www.bonusan.com/nl-NL/blog/weten-welke-voedingsstoffen-je-mist-als-veganist](https://www.bonusan.com/nl-NL/blog/weten-welke-voedingsstoffen-je-mist-als-veganist)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(4)</span>Diese Vitamine und Mineralien benötigen Sie als Veganer – Holland &amp; Barrett, [https://www.hollandandbarrett.nl/advies/vitamines/welke-vitamines-heb-ik-als-vegan-zonder/](https://www.hollandandbarrett.nl/advies/vitamines/welke-vitamines-heb-ik-als-vegan-zonder/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(5)</span>Erforschung der Vitamin-B12-Supplementierung in der veganen Bevölkerung – MDPI, [https://www.mdpi.com/2072-6643/16/10/1442](https://www.mdpi.com/2072-6643/16/10/1442)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(6)</span>Wie sieht es mit dem Omega-3- und Omega-6-Verhältnis aus? - Supersnelgezond, [https://supersnelgezond.nl/omega-3-en-omega-6-ratio/](https://supersnelgezond.nl/omega-3-en-omega-6-ratio/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(7)</span>Das richtige Verhältnis von Omega-3- und 6-Fettsäuren - Natuurdietisten.nl, [https://www.natuurdietisten.nl/juiste-ratio-omega-3-en-6-vetzuur/](https://www.natuurdietisten.nl/juiste-ratio-omega-3-en-6-vetzuur/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(8)</span>Omega 3-6-9: Was sind optimale Verhältnisse? - Vitakruid, [https://www.vitakruid.nl/blog/omega-3-6-9-wat-zijn-optimale-ratios](https://www.vitakruid.nl/blog/omega-3-6-9-wat-zijn-optimale-ratios)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(9)</span>Vegan Diet Analyzer – Interne Datenbank (ai-mode.txt)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(10)</span>Wie kann ich mich gesund vegan ernähren? - Ernährungszentrum, [https://www.voedingscentrum.nl/nl/service/question-en-answer/gezonde-voeding-en-voedingsstoffen/hoe-kan-ik-gezond-veganistiek-eten-.aspx] (https://www.voedingscentrum.nl/nl/service/question-en-answer/gezonde-voeding-en-voedingsstoffen/hoe-kan-ik-gezond-veganistiek-eten-.aspx)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(11)</span>Die vegane Vitaminliste – Nutribites, [https://www.nutribites.nl/artikelen/vegan-vitamine/](https://www.nutribites.nl/artikelen/vegan-vitamine/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(12)</span>Vitamin B12 (Cobalamin) – Ernährungszentrum, [https://www.voedingscentrum.nl/encyclopedie/vitamine-b12.aspx](https://www.voedingscentrum.nl/encyclopedie/vitamine-b12.aspx)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(13)</span>Vitamin B12: Wundermittel oder Hype? - Autsider, [https://autsider.net/2025/03/15/vitamine-b12-wondermiddel-of-hype/](https://autsider.net/2025/03/15/vitamine-b12-wondermiddel-of-hype/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(14)</span>Von veganer Pizza zur pflanzlichen Ernährung – De Gezonde Wereld, [https://www.degezondewereld.nl/advies/vegan-burger](https://www.degezondewereld.nl/advies/vegan-burger)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(15)</span>Holland &amp; Barrett Selenium 50mcg, [https://www.hollandandbarrett.be/shop/product/holland-barrett-selenium-50-mcg-60050837](https://www.hollandandbarrett.be/shop/product/holland-barrett-selenium-50-mcg-60050837)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(16)</span>Omega-3-Fettsäuren EPA/DHA – Orthokennis Foundation, [https://www.orthokennis.nl/nutritive/Omega%203-vetzuur%20EPA%20DHA](https://www.orthokennis.nl/nutritive/Omega%203-vetzuur%20EPA%20DHA)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(17)</span>Alles über Omega-3- und Omega-6-Fettsäuren – DQA Health, [https://www.dqahealthandbeauty.nl/alles-over-omega-3-omega-6-vetzuur/](https://www.dqahealthandbeauty.nl/alles-over-omega-3-omega-6-vetzuur/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(18)</span>Proteine ​​– Ernährungszentrum, [https://www.voedingscentrum.nl/encyclopedie/proteins.aspx](https://www.voedingscentrum.nl/encyclopedie/proteins.aspx)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(19)</span>Proteinverschiebung auf unserem Teller – Green Deal Flanders, [https://Omgeving.vlaanderen.be/sites/default/files/2025-09/GD-Eiwitshift-overzicht-artikelen-in-de-kijker.pdf](https://Omgeving.vlaanderen.be/sites/default/files/2025-09/GD-Eiwitshift-overzicht-artikelen-in-de-kijker.pdf)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(20)</span>Enthält Tempeh Vitamin K2? - Cymbiotika, [https://cymbiotika.com/blogs/bone-health/does-tempeh-contain-vitamin-k2-benefits-and-facts](https://cymbiotika.com/blogs/bone-health/does-tempeh-contain-vitamin-k2-benefits-and-facts)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(21)</span>Colruyt Group führt Boni Plan't ein, [https://press.colruytgroup.com/colruyt-group-lanceert-boni-plant-more-than-100-plant-based-products-are-now-still-accessible](https://press.colruytgroup.com/colruyt-group-lanceert-boni-plant-more-than-100-plant-based-products-are-now-still-accessible)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(22)</span>Hausmarke Boni Selection – Collect&amp;Go, [https://www.collectandgo.be/nl/bedrijven-boni-selection](https://www.collectandgo.be/nl/bedrijven-boni-selection)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(23)</span>Vitamin K: Was ist das? - Vitakruid, [https://www.vitakruid.be/categorieen/vitamine-k](https://www.vitakruid.be/categorieen/vitamine-k)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(24)</span>Wie viel Vitamin K2 enthält Sauerkraut? - Cymbiotika, [https://cymbiotika.com/blogs/bone-health/how-much-vitamin-k2-in-sauerkraut](https://cymbiotika.com/blogs/bone-health/how-much-vitamin-k2-in-sauerkraut)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(25)</span>Beste fermentierte Lebensmittel für Ihre Vitamin-K2-Aufnahme – Cymbiotika, [https://cymbiotika.com/blogs/bone-health/best-fermented-foods-for-your-vitamin-k2-intake](https://cymbiotika.com/blogs/bone-health/best-fermented-foods-for-your-vitamin-k2-intake)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(26)</span>Vitamin K2 für gesunde Knochen – BioProphyl, [https://www.bioprophyl.de/nl/magazine/vitamine-k2/vitamine-k2](https://www.bioprophyl.de/nl/magazine/vitamine-k2/vitamine-k2)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(27)</span>Vitamin K2 – Superfoodismus, [https://superfoodism.com/vitamine-k2/](https://superfoodism.com/vitamine-k2/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(28)</span>Vitamin K2: Alles über seine Wirkung und Vorteile – Vital Nutrition, [https://vitalnutrition.nl/blogs/blog/vitamine-k2-werking-en-voordeel](https://vitalnutrition.nl/blogs/blog/vitamine-k2-werking-en-voordeel)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(29)</span>Bestimmung der Vitamin-K-Zusammensetzung fermentierter Lebensmittel – PubMed, [https://pubmed.ncbi.nlm.nih.gov/30724228/](https://pubmed.ncbi.nlm.nih.gov/30724228/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(30)</span>Probiotische Lebensmittel Teil 2 – Natuurdietisten.nl, [https://www.natuurdietisten.nl/probiotic-foods-deel-2-2/](https://www.natuurdietisten.nl/probiotic-foods-deel-2-2/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(31)</span>Enthält Kimchi Vitamin K2? - Cymbiotika, [https://cymbiotika.com/blogs/bone-health/does-kimchi-have-vitamin-k2-benefits-and-food-sources](https://cymbiotika.com/blogs/bone-health/does-kimchi-have-vitamin-k2-benefits-and-food-sources)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(32)</span>Wie Eisen und Vitamin C zusammenarbeiten – Vitakruid, [https://www.vitakruid.nl/blog/hoe-ijzer-en-vitamine-c-samenwerken-in-je-lijf](https://www.vitakruid.nl/blog/hoe-ijzer-en-vitamine-c-samenwerken-in-je-lijf)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(33)</span>Ernährungsberatung bei Eisenmangel – Amsterdam UMC, [https://www.amsterdamumc.nl/nl/patienteninformatie/voedingsadvies-bij-ijzerkorting](https://www.amsterdamumc.nl/nl/patienteninformatie/voedingsadvies-bij-ijzerkorting)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(34)</span>Vegan? Die 6 wichtigsten Vitamine – Davitamon, [https://www.davitamon.nl/blog/vitamines-mineralen-veganisten/](https://www.davitamon.nl/blog/vitamines-mineralen-veganisten/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(35)</span>Besteht bei Ihnen als Veganer ein höheres Risiko für Eisenmangel? - Charlotte Labee, [https://shop.charlottelabee.com/blogs/blog/have-you-as-vegan-a-greater-risk-of-an-iron-deficit](https://shop.charlottelabee.com/blogs/blog/have-you-as-vegan-a-greater-risk-of-an-iron-deficit]</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(36)</span>Ernährungsberatung bei Eisenmangel – Anna Hospital, [https://www.annaziekenhuis.nl/medische-informatie/die009-voedingsadvies-bij-ijzerkort/](https://www.annaziekenhuis.nl/medische-informatie/die009-voedingsadvies-bij-ijzerkorting/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(37)</span>Selenium – Niederländischer Verein für Veganismus, [https://www.veganisme.org/informatie/voedingsstoffen/selenium/](https://www.veganisme.org/informatie/voedingsstoffen/selenium/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(38)</span>Jod in einer pflanzlichen Ernährung – Plants for Health, [https://plants-for-health.nl/jodium-bij-een-plantaard-dieet-zo- Krijg-je-genoeg-binnen/](https://plants-for-health.nl/jodium-bij-een-plantaard-dieet-zo- Krijg-je-genoeg-binnen/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(39)</span>Warum wird Brot Jod zugesetzt? - Gezondheid.be, [https://www.gezondheid.be/artikelen/voedingsadditief/waarom-wordt-iodine-toeadd-aan-brood-7792](https://www.gezondheid.be/artikelen/voedingsadditief/waarom-wordt-iodine-toeadd-aan-brood-7792)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(40)</span>WHO und belgische Experten plädieren für mehr Jodsalz - Gesundheit und Wissenschaft, [https://www.gezondheidenkennis.be/gezondheid-in-de-media/who-en-belgische-experts-pleiten-voor-meer-geiodeerd-zout](https://www.gezondheidengezondheid.be/gezondheid-in-de-media/who-en-belgische-experts-pleiten-voor-meer-geiodeerd-zout)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(41)</span>Überblick über die Jodpolitik – RIVM, [https://www.rivm.nl/bibliotheek/verslag/KN-2024-0069.pdf](https://www.rivm.nl/bibliotheek/verslag/KN-2024-0069.pdf)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(42)</span>Jod – Ernährungszentrum, [https://www.voedingscentrum.nl/encyclopedie/iodine.aspx](https://www.voedingscentrum.nl/encyclopedie/iodine.aspx)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(43)</span>Selen-Zink-Tabletten – Lucovitaal, [https://www.lucovitaal.nl/selenium-zinc-tablets.html](https://www.lucovitaal.nl/selenium-zinc-tablets.html)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(44)</span>Paranüsse und Selen - Noten.nl, [https://noten.nl/paranoten-en-seleen-hoe-zit-het-nou-eigenlijk](https://noten.nl/paranoten-en-seleen-hoe-zit-het-nou-eigenlijk)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(45)</span>Paranuss gegen Coronavirus – MMV, [https://www.mmv.nl/nieuws/paranoot-tegen-coronavirus/](https://www.mmv.nl/nieuws/paranoot-tegen-coronavirus/)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(46)</span>Maximal 2 Paranüsse pro Tag – Gezondnu, [https://gezondnu.nl/voeding/oeh-dit-is-waarom-je-maximaal-2-paranoten-per-dag-mag-eten](https://gezondnu.nl/voeding/oeh-dit-is-waarom-je-maximaal-2-paranoten-per-dag-mag-eten)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(47)</span>Hausmarken von Boni Selection – Colruyt Group, [https://www.colruytgroup.com/nl/our-brands/consument-brands/boni-selection](https://www.colruytgroup.com/nl/our-brands/consument-brands/boni-selection)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(48)</span>BONI BIO Leinöl – Bio-Planet, [https://www.bioplanet.be/nl/producten/16259](https://www.bioplanet.be/nl/producten/16259)</li>
+<li class="ml-6 text-slate-400 text-xs leading-relaxed"><span class="text-emerald-500/60 font-medium mr-2">(49)</span>Sortiment an Nüssen – Colruyt, [https://www.colruyt.be/nl/producten/alle-categorieen/groenten-en-fruit/noten?page=2](https://www.colruyt.be/nl/producten/alle-categorieen/groenten-en-fruit/noten?page=2)</li>
+</ul>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Footer / Bottom Bar -->
+<footer class="mt-16 text-center text-slate-500 text-sm">
+<p>© 2026 Vegan Diet Analyzer – Evidenzbasierte Ernährungsverfolgung.</p>
+</footer>
+</div>
+<script src="/src/main.js" type="module"></script>
+</body>
+</html>

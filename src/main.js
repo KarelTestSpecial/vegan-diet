@@ -1,3 +1,4 @@
+import { translations } from './data/translations.js';
 import { analyzeNutrients, RDI, calculateProteinGoal } from './logic/analyzer.js';
 import { getCloudCustomFoods, saveCloudCustomFood, saveCloudCustomFoodsBulk, deleteCloudCustomFood, updateCloudCustomFood, getCloudLog, saveCloudLog } from './logic/db.js';
 import { setupAuthListeners, loginUser, registerUser, logoutUser, resetPassword } from './logic/auth.js';
@@ -5,12 +6,27 @@ import { parseNutrientText, parseTSVProducts } from './logic/parser.js';
 import { foods } from './data/foods.js';
 import Chart from 'chart.js/auto';
 
+
+const getLang = () => {
+  const path = window.location.pathname;
+  if (path.includes('index_en')) return 'en';
+  if (path.includes('index_fr')) return 'fr';
+  if (path.includes('index_de')) return 'de';
+  if (path.includes('index_es')) return 'es';
+  if (path.includes('index_it')) return 'it';
+  if (path.includes('index_pt')) return 'pt';
+  return 'nl';
+};
+const currentLang = getLang();
+const t = (key) => translations[currentLang][key] || key;
+
 // State
 let state = {
   weight: 75,
   log: [],
   charts: {},
-  customFoods: []
+  customFoods: [],
+  trackedNutrients: ['protein', 'b12', 'ala', 'iron', 'calcium', 'zinc', 'iodine', 'selenium']
 };
 let currentUser = null;
 
@@ -75,6 +91,23 @@ async function init() {
   setupEventListeners();
   loadState(); // load local weight
   
+  // Sync checkboxes with state
+  const checkboxes = document.querySelectorAll('#nutrient-tracker-settings input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = state.trackedNutrients.includes(cb.value);
+    cb.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        if (!state.trackedNutrients.includes(e.target.value)) {
+          state.trackedNutrients.push(e.target.value);
+        }
+      } else {
+        state.trackedNutrients = state.trackedNutrients.filter(n => n !== e.target.value);
+      }
+      saveState();
+      updateUI();
+    });
+  });
+
   // Initial render (Guest Mode by Default)
   state.customFoods = await getCloudCustomFoods(null);
   state.log = await getCloudLog(null);
@@ -103,7 +136,7 @@ async function init() {
     currentUser = null;
     
     // Update Profile UI
-    selectors.profileName.textContent = 'Gast (Lokaal)';
+    selectors.profileName.textContent = t('guest');
     selectors.btnShowLogin.classList.remove('hidden');
     selectors.btnLogout.classList.add('hidden');
     
@@ -153,6 +186,9 @@ function loadState() {
   if (saved) {
     const parsed = JSON.parse(saved);
     state.weight = parsed.weight || 75;
+    if(parsed.trackedNutrients) {
+      state.trackedNutrients = parsed.trackedNutrients;
+    }
     selectors.weightInput.value = state.weight;
   }
 }
@@ -160,7 +196,8 @@ function loadState() {
 async function saveState() {
   // Save settings locally
   localStorage.setItem('veganAnalyzerSettings', JSON.stringify({
-    weight: state.weight
+    weight: state.weight,
+    trackedNutrients: state.trackedNutrients
   }));
   
   // Save logbook to cloud
@@ -562,17 +599,34 @@ function initCharts() {
 function updateUI() {
   const { totals, proteinGoal, insights } = analyzeNutrients(state.log, state.weight);
 
-  // Update Charts
-  updateChart('protein', totals.protein, proteinGoal);
-  updateChart('b12', totals.b12, RDI.b12);
-  updateChart('ala', totals.ala, RDI.ala);
-  updateChart('iron', totals.iron, RDI.iron);
+  // Filter UI based on trackedNutrients
+  const mainCharts = ['protein', 'b12', 'ala', 'iron'];
+  mainCharts.forEach(id => {
+    const el = document.querySelector(`.nutrient-stat[data-nutrient="${id}"]`);
+    if(el) {
+      if(state.trackedNutrients.includes(id)) {
+        el.style.display = '';
+        if(id === 'protein') updateChart('protein', totals.protein, proteinGoal);
+        else updateChart(id, totals[id], RDI[id]);
+      } else {
+        el.style.display = 'none';
+      }
+    }
+  });
 
-  // Update Linear Bars
-  updateBar('calcium', totals.calcium, RDI.calcium, 'mg');
-  updateBar('zinc', totals.zinc, RDI.zinc, 'mg');
-  updateBar('iodine', totals.iodine, RDI.iodine, 'μg');
-  updateBar('selenium', totals.selenium, RDI.selenium, 'μg');
+  const bars = ['calcium', 'zinc', 'iodine', 'selenium'];
+  bars.forEach(id => {
+    const el = document.getElementById(`${id}-summary`)?.parentElement?.parentElement;
+    if(el) {
+      if(state.trackedNutrients.includes(id)) {
+        el.style.display = '';
+        const unit = id === 'calcium' || id === 'zinc' ? 'mg' : 'μg';
+        updateBar(id, totals[id], RDI[id], unit);
+      } else {
+        el.style.display = 'none';
+      }
+    }
+  });
 
   // Update Log List
   renderLog();
@@ -662,7 +716,7 @@ function renderInsights(insights) {
   }
 
   if (state.log.length === 0) {
-    selectors.insightsContainer.innerHTML = '<div class="col-span-full p-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700 text-center text-slate-500 italic text-sm">Voeg voeding toe om een analyse te genereren...</div>';
+    selectors.insightsContainer.innerHTML = `<div class="col-span-full p-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700 text-center text-slate-500 italic text-sm">${t('add_food_placeholder')}</div>`;
     return;
   }
 
