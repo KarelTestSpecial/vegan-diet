@@ -609,8 +609,20 @@ function updateChart(id, value, goal) {
 
 function updateBar(id, value, goal, unit) {
   const percent = Math.min(100, (value / goal) * 100);
-  document.getElementById(`${id}-bar`).style.width = `${percent}%`;
+  const bar = document.getElementById(`${id}-bar`);
+  bar.style.width = `${percent}%`;
   document.getElementById(`${id}-summary`).textContent = `${value.toFixed(1)} / ${goal}${unit}`;
+
+  // Visual feedback for high Selenium
+  if (id === 'selenium') {
+    if (value > RDI.selenium_limit) {
+      bar.classList.remove('bg-purple-500');
+      bar.classList.add('bg-red-500');
+    } else {
+      bar.classList.remove('bg-red-500');
+      bar.classList.add('bg-purple-500');
+    }
+  }
 }
 
 function renderLog() {

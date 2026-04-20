@@ -12,7 +12,8 @@ export const RDI = {
   iodine: 150,     // mcg
   selenium: 55,    // mcg
   vitc: 90,        // mg
-  omega6_limit: 10 // g (for competition warning)
+  omega6_limit: 10, // g (for competition warning)
+  selenium_limit: 300 // mcg (EFSA upper limit)
 };
 
 export function calculateProteinGoal(weight) {
@@ -107,6 +108,14 @@ export function analyzeNutrients(log, weight) {
     insights.push({
       type: 'danger',
       text: 'Te veel paranoten! Beperk tot maximaal 2 per dag om seleniumvergiftiging te voorkomen.',
+      nutrient: 'selenium'
+    });
+  }
+
+  if (totals.selenium > RDI.selenium_limit) {
+    insights.push({
+      type: 'danger',
+      text: `Selenium limiet overschreden (${Math.round(totals.selenium)}mcg). Hoge inname kan leiden tot selenose. Beperk paranoten of supplementen.`,
       nutrient: 'selenium'
     });
   }
