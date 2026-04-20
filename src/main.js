@@ -577,6 +577,8 @@ function updateUI() {
   updateBar('zinc', totals.zinc, RDI.zinc, 'mg');
   updateBar('iodine', totals.iodine, RDI.iodine, 'μg');
   updateBar('selenium', totals.selenium, RDI.selenium, 'μg');
+  updateBar('k1', totals.k1, RDI.k1, 'μg');
+  updateBar('k2', totals.k2, RDI.k2, 'μg');
 
   // Update Log List
   renderLog();

@@ -12,6 +12,8 @@ export const RDI = {
   iodine: 150,     // mcg
   selenium: 55,    // mcg
   vitc: 90,        // mg
+  k1: 70,          // mcg
+  k2: 100,         // mcg (suggested for MK-7)
   omega6_limit: 10, // g (for competition warning)
   selenium_limit: 300 // mcg (EFSA upper limit)
 };
