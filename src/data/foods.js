@@ -309,6 +309,81 @@ export const foods = [
     category: 'Vegetables'
   },
   {
+    id: 'spinach-raw',
+    name: 'Spinazie (Rauw)',
+    unit: 'g',
+    nutrients: {
+      calories: 23,
+      protein: 2.9,
+      iron: 2.7,
+      calcium: 99,
+      fiber: 2.2,
+      vitc: 28,
+      k1: 483
+    },
+    category: 'Vegetables'
+  },
+  {
+    id: 'kale-raw',
+    name: 'Boerenkool (Rauw)',
+    unit: 'g',
+    nutrients: {
+      calories: 49,
+      protein: 4.3,
+      iron: 1.5,
+      calcium: 150,
+      fiber: 3.6,
+      vitc: 120,
+      k1: 705
+    },
+    category: 'Vegetables'
+  },
+  {
+    id: 'red-cabbage-raw',
+    name: 'Rodekool (Rauw)',
+    unit: 'g',
+    nutrients: {
+      calories: 31,
+      protein: 1.4,
+      iron: 0.8,
+      calcium: 45,
+      fiber: 2.5,
+      vitc: 57,
+      k1: 38
+    },
+    category: 'Vegetables'
+  },
+  {
+    id: 'arugula-raw',
+    name: 'Rucola (Rauw)',
+    unit: 'g',
+    nutrients: {
+      calories: 25,
+      protein: 2.6,
+      iron: 1.5,
+      calcium: 160,
+      fiber: 1.6,
+      vitc: 15,
+      k1: 109
+    },
+    category: 'Vegetables'
+  },
+  {
+    id: 'butterhead-lettuce-raw',
+    name: 'Kropsla (Rauw)',
+    unit: 'g',
+    nutrients: {
+      calories: 13,
+      protein: 1.2,
+      iron: 1.2,
+      calcium: 35,
+      fiber: 1.1,
+      vitc: 10,
+      k1: 126
+    },
+    category: 'Vegetables'
+  },
+  {
     id: 'brazil-nut',
     name: 'Paranoot (1 stuk)',
     unit: 'portion',

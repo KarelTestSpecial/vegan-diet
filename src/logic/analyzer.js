@@ -27,6 +27,7 @@ export function analyzeNutrients(log, weight) {
     b12: 0,
     ala: 0,
     epa_dha: 0,
+    k1: 0,
     k2: 0,
     iron: 0,
     zinc: 0,
