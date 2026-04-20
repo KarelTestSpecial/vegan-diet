@@ -3,20 +3,7 @@
  */
 
 export function parseNutrientText(text) {
-  const nutrients = {
-    calories: 0,
-    protein: 0,
-    b12: 0,
-    ala: 0,
-    epa_dha: 0,
-    iron: 0,
-    zinc: 0,
-    calcium: 0,
-    vitc: 0,
-    iodine: 0,
-    selenium: 0,
-    omega6: 0
-  };
+  const nutrients = {};
 
   const patterns = {
     calories: /calorie|kcal|energie/i,
@@ -27,10 +14,29 @@ export function parseNutrientText(text) {
     iron: /ijzer|iron/i,
     zinc: /zink|zinc/i,
     calcium: /calcium/i,
-    vitc: /vitamine c|ascorbine/i,
     iodine: /jodium|iodine/i,
     selenium: /selenium/i,
-    omega6: /omega-6|linolzuur/i
+    magnesium: /magnesium/i,
+    potassium: /kalium|potassium/i,
+    phosphorus: /fosfor|phosphorus/i,
+    vit_a: /vitamine a|retinol/i,
+    vit_d: /vitamine d|calciferol/i,
+    vit_e: /vitamine e|tocoferol/i,
+    vit_k1: /vitamine k1/i,
+    vit_k2: /vitamine k2|menaquinone/i,
+    vit_b1: /vitamine b1|thiamine/i,
+    vit_b2: /vitamine b2|riboflavine/i,
+    vit_b3: /vitamine b3|niacin/i,
+    vit_b5: /vitamine b5|pantotheen/i,
+    vit_b6: /vitamine b6|pyridoxine/i,
+    vit_b7: /biotine|vitamine b7/i,
+    vit_b9: /foliumzuur|folate|b9/i,
+    vitc: /vitamine c|ascorbine/i,
+    choline: /choline/i,
+    lysine: /lysine/i,
+    methionine: /methionine/i,
+    copper: /koper|copper/i,
+    manganese: /mangaan|manganese/i
   };
 
   const lines = text.split('\n');
@@ -61,7 +67,6 @@ export function parseNutrientText(text) {
 
 /**
  * Parse TSV data into product objects.
- * Expected format: Naam\tIngrediënten\tUnit\tCalories\tProtein\tB12\tALA\tIron\tCalcium\tZinc\tIodine\tSelenium
  */
 export function parseTSVProducts(tsv) {
   const lines = tsv.trim().split('\n');
@@ -101,7 +106,45 @@ export function parseTSVProducts(tsv) {
           'selenium': 'selenium',
           'kcal': 'calories',
           'calories': 'calories',
-          'energie': 'calories'
+          'energie': 'calories',
+          'magnesium': 'magnesium',
+          'kalium': 'potassium',
+          'potassium': 'potassium',
+          'fosfor': 'phosphorus',
+          'phosphorus': 'phosphorus',
+          'vitamine a': 'vit_a',
+          'vitamin a': 'vit_a',
+          'vitamine d': 'vit_d',
+          'vitamin d': 'vit_d',
+          'vitamine e': 'vit_e',
+          'vitamin e': 'vit_e',
+          'vitamine k1': 'vit_k1',
+          'vitamin k1': 'vit_k1',
+          'vitamine k2': 'vit_k2',
+          'vitamin k2': 'vit_k2',
+          'vitamine b1': 'vit_b1',
+          'vitamin b1': 'vit_b1',
+          'vitamine b2': 'vit_b2',
+          'vitamin b2': 'vit_b2',
+          'vitamine b3': 'vit_b3',
+          'vitamin b3': 'vit_b3',
+          'vitamine b5': 'vit_b5',
+          'vitamin b5': 'vit_b5',
+          'vitamine b6': 'vit_b6',
+          'vitamin b6': 'vit_b6',
+          'biotine': 'vit_b7',
+          'biotin': 'vit_b7',
+          'foliumzuur': 'vit_b9',
+          'folate': 'vit_b9',
+          'vitamine c': 'vitc',
+          'vitamin c': 'vitc',
+          'choline': 'choline',
+          'lysine': 'lysine',
+          'methionine': 'methionine',
+          'koper': 'copper',
+          'copper': 'copper',
+          'mangaan': 'manganese',
+          'manganese': 'manganese'
         };
         const key = keyMap[header] || header;
         if (val) {
