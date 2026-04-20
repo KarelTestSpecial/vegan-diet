@@ -13,8 +13,12 @@ export const foods = [
       b12: 0.38,
       iron: 0.5,
       calcium: 120,
-      omega6: 0.8, // From report analysis
-      vitc: 0
+      ala: 0.1,
+      vit_d: 0.75,
+      vit_b2: 0.21,
+      magnesium: 15,
+      potassium: 120,
+      iodine: 22.5
     },
     category: 'Drinks'
   },
@@ -28,7 +32,15 @@ export const foods = [
       iron: 2.1,
       zinc: 1.1,
       vitc: 0,
-      b12: 0
+      b12: 0,
+      magnesium: 36,
+      potassium: 369,
+      phosphorus: 180,
+      vit_b1: 0.17,
+      vit_b6: 0.18,
+      vit_b9: 181,
+      copper: 0.25,
+      manganese: 0.5
     },
     category: 'Legumes'
   },
@@ -39,10 +51,16 @@ export const foods = [
     nutrients: {
       calories: 146,
       protein: 15.0,
-      calcium: 350, // Typical for calcium-set tofu
+      calcium: 350,
       iron: 1.9,
       zinc: 1.1,
-      b12: 0
+      b12: 0,
+      magnesium: 60,
+      selenium: 17,
+      vit_b1: 0.1,
+      vit_b3: 0.2,
+      lysine: 1000,
+      methionine: 200
     },
     category: 'Protein'
   },
@@ -54,7 +72,12 @@ export const foods = [
       calories: 120,
       protein: 25.0,
       iron: 1.2,
-      b12: 0
+      b12: 0,
+      selenium: 22,
+      magnesium: 15,
+      phosphorus: 120,
+      copper: 0.1,
+      manganese: 0.1
     },
     category: 'Protein'
   },
@@ -66,8 +89,14 @@ export const foods = [
       calories: 196,
       protein: 4.5,
       ala: 2700,
-      omega6: 11.4,
-      iron: 0.8
+      iron: 0.8,
+      magnesium: 47,
+      zinc: 0.9,
+      vit_b6: 0.16,
+      vit_b9: 29,
+      copper: 0.4,
+      manganese: 1.0,
+      vit_e: 0.2
     },
     category: 'Nuts'
   },
@@ -78,7 +107,8 @@ export const foods = [
     nutrients: {
       calories: 120,
       ala: 7100,
-      omega6: 1.8
+      vit_e: 2.5,
+      vit_k1: 1
     },
     category: 'Fats'
   },
@@ -88,7 +118,9 @@ export const foods = [
     unit: 'portion',
     nutrients: {
       epa_dha: 450,
-      b12: 0
+      b12: 0,
+      vit_d: 10,
+      vit_e: 5
     },
     category: 'Supplements'
   },
@@ -98,8 +130,12 @@ export const foods = [
     unit: 'g',
     nutrients: {
       calories: 19,
-      k2: 5, // ~5-10mcg per 100g
-      vitc: 15
+      vit_k2: 5,
+      vitc: 15,
+      iron: 1.5,
+      magnesium: 13,
+      potassium: 170,
+      vit_b6: 0.1
     },
     category: 'Vegetables'
   },
@@ -109,7 +145,10 @@ export const foods = [
     unit: 'portion',
     nutrients: {
       calories: 33,
-      selenium: 70 // ~50-90mcg
+      selenium: 70,
+      magnesium: 15,
+      phosphorus: 35,
+      vit_e: 0.3
     },
     category: 'Nuts'
   },
@@ -119,8 +158,11 @@ export const foods = [
     unit: 'portion',
     nutrients: {
       calories: 5,
-      iodine: 75, // ~50% of ADH
-      iron: 0.5
+      iodine: 75,
+      iron: 0.5,
+      vit_a: 50,
+      vit_b12: 1.0,
+      vitc: 1.0
     },
     category: 'Vegetables'
   },
@@ -130,7 +172,12 @@ export const foods = [
     unit: 'g',
     nutrients: {
       calories: 31,
-      vitc: 127
+      vitc: 127,
+      vit_a: 150,
+      vit_b6: 0.3,
+      vit_b9: 46,
+      vit_e: 1.6,
+      potassium: 211
     },
     category: 'Vegetables'
   },
@@ -142,7 +189,12 @@ export const foods = [
       calories: 170,
       protein: 9,
       zinc: 2.3,
-      iron: 2.5
+      iron: 2.5,
+      magnesium: 150,
+      phosphorus: 350,
+      potassium: 240,
+      manganese: 1.3,
+      copper: 0.4
     },
     category: 'Nuts'
   }

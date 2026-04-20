@@ -417,12 +417,12 @@ function renderDatabaseTable() {
   // Update header
   const headerTr = document.getElementById('database-products-header');
   if (headerTr) {
-    const topNutrients = state.trackedNutrients.slice(0, 5); // Show top 5 in table
-    headerTr.innerHTML = '<th class="px-4 py-3">Product</th>';
+    const topNutrients = state.trackedNutrients.slice(0, 12); // Show top 12 in table
+    headerTr.innerHTML = '<th class="px-4 py-3 min-w-[200px]">Product</th>';
     topNutrients.forEach(key => {
-      headerTr.innerHTML += `<th class="px-4 py-3 text-[10px]">${t(key)}</th>`;
+      headerTr.innerHTML += `<th class="px-4 py-3 text-[10px] min-w-[80px]">${t(key)}</th>`;
     });
-    headerTr.innerHTML += '<th class="px-4 py-3 text-right">Acties</th>';
+    headerTr.innerHTML += '<th class="px-4 py-3 text-right min-w-[100px]">Acties</th>';
   }
 
   selectors.databaseProductsList.innerHTML = '';
@@ -432,7 +432,7 @@ function renderDatabaseTable() {
     tr.className = 'border-b border-slate-800/30 hover:bg-slate-800/20 transition-colors';
     
     const n = food.nutrients || {};
-    const topNutrients = state.trackedNutrients.slice(0, 5);
+    const topNutrients = state.trackedNutrients.slice(0, 12);
     
     let nutCells = '';
     topNutrients.forEach(key => {
