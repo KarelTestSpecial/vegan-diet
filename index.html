@@ -89,9 +89,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       
       <!-- Left Column: Input -->
-      <aside class="lg:col-span-4 space-y-4">
-        <header class="mb-4 text-left">
-          <div class="flex items-center justify-between mb-2">
+      <aside class="lg:col-span-4 space-y-2">
+        <header class="mb-2 text-left">
+          <div class="flex items-center justify-between mb-1">
             <div class="flex items-center gap-3">
               <div class="inline-flex items-center justify-center p-2 bg-emerald-500/10 rounded-xl ring-1 ring-emerald-500/30">
                 <span class="text-2xl">🔬</span>
@@ -186,10 +186,10 @@
         </div>
 
         <!-- DASHBOARD VIEW -->
-        <div id="dashboard-view" class="space-y-6 animate-fadeIn">
+        <div id="dashboard-view" class="space-y-4 animate-fadeIn">
           <!-- Nutrient Dashboard -->
-          <section class="glass-card p-8 rounded-3xl">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <section class="glass-card p-6 rounded-3xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h2 class="text-2xl font-bold">Nutriënten Status</h2>
             <div class="flex gap-4">
               <div class="flex items-center text-sm text-slate-500">
@@ -204,7 +204,7 @@
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             <!-- Circular indicators for key nutrients -->
             <div class="nutrient-stat" data-nutrient="protein">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-2">
                 <canvas id="protein-chart"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                   <span class="text-xl sm:text-2xl font-bold text-white" id="protein-percent">0%</span>
@@ -215,7 +215,7 @@
             </div>
 
             <div class="nutrient-stat" data-nutrient="b12">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-2">
                 <canvas id="b12-chart"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                   <span class="text-xl sm:text-2xl font-bold text-white" id="b12-percent">0%</span>
@@ -226,7 +226,7 @@
             </div>
 
             <div class="nutrient-stat" data-nutrient="ala">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-2">
                 <canvas id="ala-chart"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                   <span class="text-xl sm:text-2xl font-bold text-white" id="ala-percent">0%</span>
@@ -237,7 +237,7 @@
             </div>
 
             <div class="nutrient-stat" data-nutrient="iron">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
+              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-2">
                 <canvas id="iron-chart"></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                   <span class="text-xl sm:text-2xl font-bold text-white" id="iron-percent">0%</span>
@@ -248,11 +248,11 @@
             </div>
           </div>
 
-          <div class="mt-10 pt-10 border-t border-slate-800/50">
-            <h3 class="text-lg font-bold mb-6 flex items-center"><span class="mr-2">📊</span> Andere Vitaminen & Mineralen</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
+          <div class="mt-6 pt-6 border-t border-slate-800/50">
+            <h3 class="text-lg font-bold mb-4 flex items-center"><span class="mr-2">📊</span> Andere Vitaminen & Mineralen</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div class="flex justify-between text-sm mb-1.5">
                   <span class="text-slate-300 font-medium">Calcium</span>
                   <span class="font-medium text-emerald-100" id="calcium-summary">0 / 1000mg</span>
                 </div>
@@ -260,8 +260,8 @@
                   <div id="calcium-bar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
+              <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div class="flex justify-between text-sm mb-1.5">
                   <span class="text-slate-300 font-medium">Zink</span>
                   <span class="font-medium text-sky-100" id="zinc-summary">0 / 11mg</span>
                 </div>
@@ -269,8 +269,8 @@
                   <div id="zinc-bar" class="h-full bg-sky-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
+              <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div class="flex justify-between text-sm mb-1.5">
                   <span class="text-slate-300 font-medium">Jodium</span>
                   <span class="font-medium text-indigo-100" id="iodine-summary">0 / 150μg</span>
                 </div>
@@ -278,8 +278,8 @@
                   <div id="iodine-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
+              <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div class="flex justify-between text-sm mb-1.5">
                   <span class="text-slate-300 font-medium">Selenium</span>
                   <span class="font-medium text-purple-100" id="selenium-summary">0 / 55μg</span>
                 </div>
@@ -287,8 +287,8 @@
                   <div id="selenium-bar" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
+              <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div class="flex justify-between text-sm mb-1.5">
                   <span class="text-slate-300 font-medium">Vitamine K1</span>
                   <span class="font-medium text-emerald-100" id="k1-summary">0 / 70μg</span>
                 </div>
@@ -296,8 +296,8 @@
                   <div id="k1-bar" class="h-full bg-emerald-600 transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
+              <div class="p-3 bg-slate-900/50 rounded-2xl border border-slate-800">
+                <div class="flex justify-between text-sm mb-1.5">
                   <span class="text-slate-300 font-medium">Vitamine K2</span>
                   <span class="font-medium text-amber-100" id="k2-summary">0 / 100μg</span>
                 </div>
@@ -310,11 +310,11 @@
         </section>
         
         <!-- Insights & Tips -->
-        <section class="glass-card p-5 rounded-3xl" id="insights-panel">
-          <h2 class="text-xl font-bold mb-3 flex items-center">
+        <section class="glass-card p-4 rounded-3xl" id="insights-panel">
+          <h2 class="text-xl font-bold mb-2 flex items-center">
             <span class="mr-2">💡</span> Slimme Analyse & Tips
           </h2>
-          <div id="insights-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div id="insights-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div class="col-span-full p-4 bg-slate-900/40 rounded-2xl border border-dashed border-slate-700 text-center text-slate-500 italic text-sm">
               Voeg voeding toe om een analyse te genereren...
             </div>
