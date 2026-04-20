@@ -62,7 +62,7 @@
             </button>
           </div>
         </div>
-        
+
         <div id="auth-error" class="hidden text-red-400 text-sm text-center bg-red-950/30 p-2 rounded-lg border border-red-500/20"></div>
 
         <div class="flex justify-end">
@@ -82,12 +82,12 @@
       </div>
     </div>
   </div>
-  
+
   <div id="app" class="w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-10">
-    
+
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      
+
       <!-- Left Column: Input -->
       <aside class="lg:col-span-4 space-y-4">
         <header class="mb-4 text-left">
@@ -98,7 +98,7 @@
               </div>
               <h1 class="text-xl md:text-2xl font-bold tracking-tight">Vegan<span class="text-emerald-400">Diet</span>Analyzer</h1>
             </div>
-            
+
             <div class="flex items-center gap-2">
               <button id="btn-show-login" class="text-sm text-emerald-950 font-bold bg-emerald-500 px-3 py-1.5 rounded-lg hover:bg-emerald-400 transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)] hover:scale-105 active:scale-95 border border-emerald-400">
                 Inloggen
@@ -112,7 +112,7 @@
             Optimaliseer je plantaardige dieet met kritieke markers.
           </p>
         </header>
-        
+
         <!-- User Profile Card -->
         <section class="glass-card p-4 rounded-2xl" id="profile-card">
           <div class="flex items-center justify-between mb-2">
@@ -128,6 +128,9 @@
               </div>
               <input type="number" id="weight-input" value="75" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm">
             </div>
+                      <div class="mt-4 pt-4 border-t border-slate-800/50 text-center">
+            <p class="text-[10px] text-slate-500">Ga naar 'Nutriënten Selectie' om je dashboard aan te passen.</p>
+          </div>
           </div>
         </section>
 
@@ -144,14 +147,14 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
               </div>
             </div>
-            
+
             <!-- Food List Overview -->
             <div class="bg-slate-900/50 rounded-lg border border-slate-800 overflow-hidden">
               <ul id="food-list" class="max-h-[220px] overflow-y-auto custom-scrollbar divide-y divide-slate-800/50">
                 <!-- Dynamically populated list items -->
               </ul>
             </div>
-            
+
             <!-- Add Selected Button -->
             <button id="add-selected-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm" disabled>
               Voeg Geselecteerde Toe
@@ -171,7 +174,7 @@
 
       <!-- Right Column: Results -->
       <main class="lg:col-span-8 space-y-3">
-        
+
         <!-- Navigation Toggles -->
         <div class="flex gap-2 p-1.5 bg-slate-900/80 rounded-2xl border border-slate-800/80 backdrop-blur-sm">
           <button id="nav-dashboard-btn" class="flex-1 bg-slate-800 text-emerald-400 text-sm font-bold py-2 rounded-xl transition-all flex items-center justify-center ring-1 ring-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
@@ -182,6 +185,9 @@
           </button>
           <button id="nav-guide-btn" class="flex-1 text-slate-400 text-sm font-medium py-2 rounded-xl transition-all flex items-center justify-center hover:bg-slate-800/50 hover:text-slate-300">
             <span class="mr-2">📖</span> Gids
+          </button>
+          <button id="nav-nutrients-btn" class="flex-1 text-slate-400 text-sm font-medium py-2 rounded-xl transition-all flex items-center justify-center hover:bg-slate-800/50 hover:text-slate-300">
+            <span class="mr-2">🧪</span> Nutriënten Selectie
           </button>
         </div>
 
@@ -201,96 +207,18 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-            <!-- Circular indicators for key nutrients -->
-            <div class="nutrient-stat" data-nutrient="protein">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
-                <canvas id="protein-chart"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-xl sm:text-2xl font-bold text-white" id="protein-percent">0%</span>
-                  <span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter">Eiwit</span>
-                </div>
-              </div>
-              <p class="text-center text-xs text-slate-300 font-medium" id="protein-value">0 / 0g</p>
-            </div>
-
-            <div class="nutrient-stat" data-nutrient="b12">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
-                <canvas id="b12-chart"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-xl sm:text-2xl font-bold text-white" id="b12-percent">0%</span>
-                  <span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter">B12</span>
-                </div>
-              </div>
-              <p class="text-center text-xs text-slate-300 font-medium" id="b12-value">0 / 2.8μg</p>
-            </div>
-
-            <div class="nutrient-stat" data-nutrient="ala">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
-                <canvas id="ala-chart"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-xl sm:text-2xl font-bold text-white" id="ala-percent">0%</span>
-                  <span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter text-center">ALA <span class="text-emerald-400 block -mt-1 text-center">(OMEGA-3)</span></span>
-                </div>
-              </div>
-              <p class="text-center text-xs text-slate-300 font-medium" id="ala-value">0 / 1.6g</p>
-            </div>
-
-            <div class="nutrient-stat" data-nutrient="iron">
-              <div class="relative w-full max-w-[140px] mx-auto aspect-square mb-3">
-                <canvas id="iron-chart"></canvas>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-xl sm:text-2xl font-bold text-white" id="iron-percent">0%</span>
-                  <span class="text-[10px] sm:text-[12px] text-slate-200 font-semibold uppercase tracking-tighter">IJzer</span>
-                </div>
-              </div>
-              <p class="text-center text-xs text-slate-300 font-medium" id="iron-value">0 / 14mg</p>
-            </div>
+          <div id="core-nutrients-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            <!-- Dynamically populated core charts -->
           </div>
 
           <div class="mt-10 pt-10 border-t border-slate-800/50">
             <h3 class="text-lg font-bold mb-6 flex items-center"><span class="mr-2">📊</span> Andere Vitaminen & Mineralen</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
-                  <span class="text-slate-300 font-medium">Calcium</span>
-                  <span class="font-medium text-emerald-100" id="calcium-summary">0 / 1000mg</span>
-                </div>
-                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="calcium-bar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 0%"></div>
-                </div>
-              </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
-                  <span class="text-slate-300 font-medium">Zink</span>
-                  <span class="font-medium text-sky-100" id="zinc-summary">0 / 11mg</span>
-                </div>
-                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="zinc-bar" class="h-full bg-sky-500 transition-all duration-500" style="width: 0%"></div>
-                </div>
-              </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
-                  <span class="text-slate-300 font-medium">Jodium</span>
-                  <span class="font-medium text-indigo-100" id="iodine-summary">0 / 150μg</span>
-                </div>
-                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="iodine-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
-                </div>
-              </div>
-              <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                <div class="flex justify-between text-sm mb-2">
-                  <span class="text-slate-300 font-medium">Selenium</span>
-                  <span class="font-medium text-purple-100" id="selenium-summary">0 / 55μg</span>
-                </div>
-                <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div id="selenium-bar" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
-                </div>
-              </div>
+            <div id="other-nutrients-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Dynamically populated progress bars -->
             </div>
           </div>
         </section>
-        
+
         <!-- Insights & Tips -->
         <section class="glass-card p-5 rounded-3xl" id="insights-panel">
           <h2 class="text-xl font-bold mb-3 flex items-center">
@@ -303,6 +231,26 @@
           </div>
         </section>
         </div> <!-- End Dashboard View -->
+
+        <!-- NUTRIENTS SELECTION VIEW -->
+        <div id="nutrients-view" class="hidden space-y-6 animate-fadeIn">
+          <section class="glass-card p-8 rounded-3xl">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+              <span class="mr-3">🧪</span> Nutriënten Selectie & Prioriteit
+            </h2>
+            <p class="text-slate-400 text-sm mb-8 leading-relaxed">
+              Selecteer welke nutriënten je wilt volgen en bepaal de volgorde. De bovenste 4 geselecteerde nutriënten worden als grote cirkelgrafieken getoond.
+            </p>
+            
+            <div id="nutrients-list-container" class="space-y-2">
+              <!-- Dynamically populated reorderable list -->
+            </div>
+            
+            <div class="mt-10 flex justify-end">
+               <button id="reset-nutrients-btn" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Herstel naar standaard vegan markers</button>
+            </div>
+          </section>
+        </div>
 
         <!-- DATABASE VIEW -->
         <div id="database-view" class="space-y-6 hidden animate-fadeIn">
@@ -321,55 +269,27 @@
                 <textarea id="ai-import-text" rows="2" placeholder="Bijv: Energie 120kcal, Eiwit 15g, B12 3.8mcg..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none mb-2 text-slate-100"></textarea>
                 <button id="smart-parse-btn" class="w-full bg-slate-800 hover:bg-slate-700 text-[11px] py-2 rounded-lg transition-all text-slate-200">Start Automatische Scan</button>
               </div>
-              
+
               <div class="space-y-3 pt-4 border-t border-slate-800/50">
                 <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-widest mb-1">Productgegevens</h3>
                 <input type="hidden" id="custom-edit-id" value="">
                 <input type="text" id="custom-name" placeholder="Naam van het product" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
                 <textarea id="custom-ingredients" rows="2" placeholder="Ingrediëntenlijst (optioneel)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100"></textarea>
-                
+
                 <div class="pt-2">
                   <div class="flex justify-between items-end mb-2">
                     <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-widest">Voedingswaarden</h3>
                     <span class="text-[10px] text-slate-200 italic">Per 100g / 100ml</span>
                   </div>
-                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">Eiwit (g)</label>
-                      <input type="number" id="custom-protein" step="0.1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">B12 (μg)</label>
-                      <input type="number" id="custom-b12" step="0.01" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">ALA (mg)</label>
-                      <input type="number" id="custom-ala" step="1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">IJzer (mg)</label>
-                      <input type="number" id="custom-iron" step="0.1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">Calcium (mg)</label>
-                      <input type="number" id="custom-calcium" step="1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">Zink (mg)</label>
-                      <input type="number" id="custom-zinc" step="0.1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">Jodium (μg)</label>
-                      <input type="number" id="custom-iodine" step="1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
-                    <div class="space-y-1">
-                      <label class="text-[10px] text-slate-200 ml-1">Selenium (μg)</label>
-                      <input type="number" id="custom-selenium" step="1" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs focus:ring-1 focus:ring-emerald-500 outline-none text-slate-100">
-                    </div>
+                  <div id="custom-nutrients-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <!-- Dynamically populated nutrient inputs -->
+                  </div>
+                  <div class="mt-4 flex justify-center">
+                    <button id="toggle-all-nutrients-btn" class="text-[10px] text-slate-500 hover:text-emerald-400 transition-colors uppercase tracking-widest font-bold">Toon alle 30+ nutriënten</button>
                   </div>
                 </div>
               </div>
-              
+
               <button id="save-custom-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-3 rounded-xl mt-6 transition-all shadow-lg shadow-emerald-900/20">
                 Product Opslaan in Database
               </button>
@@ -390,6 +310,7 @@
               <p class="text-[10px] text-slate-500 mt-2 italic">Headers worden automatisch gematcht (Naam, Eiwit, B12, ALA, IJzer, Calcium, etc.)</p>
             </div>
           </div>
+          </div>
           <!-- Stored Products List -->
           <div class="mt-8 pt-8 border-t border-slate-800/50">
             <h3 class="text-lg font-bold mb-4 flex items-center">
@@ -398,13 +319,9 @@
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse bg-slate-900/40 rounded-xl overflow-hidden border border-slate-800/50">
                 <thead class="bg-slate-800/50 text-[10px] uppercase tracking-wider text-slate-400">
-                  <tr>
+                  <tr id="database-products-header">
                     <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Eiwit</th>
-                    <th class="px-4 py-3">B12</th>
-                    <th class="px-4 py-3">ALA</th>
-                    <th class="px-4 py-3">Fe</th>
-                    <th class="px-4 py-3">Ca</th>
+                    <!-- Dynamic headers -->
                     <th class="px-4 py-3 text-right">Acties</th>
                   </tr>
                 </thead>
