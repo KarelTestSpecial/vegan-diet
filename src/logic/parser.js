@@ -15,7 +15,8 @@ export function parseNutrientText(text) {
     vitc: 0,
     iodine: 0,
     selenium: 0,
-    omega6: 0
+    omega6: 0,
+    fiber: 0
   };
 
   const patterns = {
@@ -30,7 +31,8 @@ export function parseNutrientText(text) {
     vitc: /vitamine c|ascorbine/i,
     iodine: /jodium|iodine/i,
     selenium: /selenium/i,
-    omega6: /omega-6|linolzuur/i
+    omega6: /omega-6|linolzuur/i,
+    fiber: /vezel|fibre|fiber/i
   };
 
   const lines = text.split('\n');
@@ -61,7 +63,7 @@ export function parseNutrientText(text) {
 
 /**
  * Parse TSV data into product objects.
- * Expected format: Naam\tIngrediënten\tUnit\tCalories\tProtein\tB12\tALA\tIron\tCalcium\tZinc\tIodine\tSelenium
+ * Expected format: Naam\tIngrediënten\tUnit\tCalories\tProtein\tB12\tALA\tIron\tCalcium\tZinc\tIodine\tSelenium\tFiber
  */
 export function parseTSVProducts(tsv) {
   const lines = tsv.trim().split('\n');
@@ -101,7 +103,10 @@ export function parseTSVProducts(tsv) {
           'selenium': 'selenium',
           'kcal': 'calories',
           'calories': 'calories',
-          'energie': 'calories'
+          'energie': 'calories',
+          'vezel': 'fiber',
+          'fiber': 'fiber',
+          'fibre': 'fiber'
         };
         const key = keyMap[header] || header;
         if (val) {

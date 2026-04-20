@@ -34,6 +34,7 @@ export function analyzeNutrients(log, weight) {
     iodine: 0,
     selenium: 0,
     omega6: 0,
+    fiber: 0,
     brazil_nuts: 0,
     soy_milk_volume: 0
   };

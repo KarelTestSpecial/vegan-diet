@@ -66,7 +66,8 @@ const customInputs = {
   calcium: document.getElementById('custom-calcium'),
   zinc: document.getElementById('custom-zinc'),
   iodine: document.getElementById('custom-iodine'),
-  selenium: document.getElementById('custom-selenium')
+  selenium: document.getElementById('custom-selenium'),
+  fiber: document.getElementById('custom-fiber')
 };
 
 // Initialize app
@@ -316,6 +317,7 @@ function populateEditForm(food) {
   customInputs.zinc.value = food.nutrients?.zinc || '';
   customInputs.iodine.value = food.nutrients?.iodine || '';
   customInputs.selenium.value = food.nutrients?.selenium || '';
+  customInputs.fiber.value = food.nutrients?.fiber || '';
   
   selectors.saveCustomBtn.textContent = 'Wijzigingen Opslaan';
   selectors.saveCustomBtn.classList.replace('bg-emerald-600/20', 'bg-amber-600/20');
@@ -463,6 +465,7 @@ function setupEventListeners() {
     customInputs.zinc.value = parsed.zinc || '';
     customInputs.iodine.value = parsed.iodine || '';
     customInputs.selenium.value = parsed.selenium || '';
+    customInputs.fiber.value = parsed.fiber || '';
     selectors.smartParseBtn.textContent = 'Geparsed! ✓';
     setTimeout(() => selectors.smartParseBtn.textContent = 'Smart Import (Scan Tekst)', 1000);
   });
@@ -487,6 +490,7 @@ function setupEventListeners() {
         zinc: parseFloat(customInputs.zinc.value) || 0,
         iodine: parseFloat(customInputs.iodine.value) || 0,
         selenium: parseFloat(customInputs.selenium.value) || 0,
+        fiber: parseFloat(customInputs.fiber.value) || 0,
         calories: 0
       }
     };
