@@ -328,18 +328,28 @@ function loadState() {
   }
 }
 
-async function saveState() {
-  // Save settings locally
+let saveTimeout = null;
+async function saveState(immediate = false) {
+  // Save settings locally (always immediate)
   localStorage.setItem('veganAnalyzerSettings', JSON.stringify({
     weight: state.weight,
     trackedNutrients: state.trackedNutrients
   }));
   
-  // Save logbook to cloud
+  // Save logbook to cloud (debounced to save costs)
   if (currentUser) {
-    await saveCloudLog(currentUser.uid, state.log);
+    if (saveTimeout) clearTimeout(saveTimeout);
+    
+    if (immediate) {
+      await saveCloudLog(currentUser.uid, state.log);
+    } else {
+      saveTimeout = setTimeout(async () => {
+        await saveCloudLog(currentUser.uid, state.log);
+      }, 2000); // Wait 2 seconds of inactivity before saving to cloud
+    }
   }
 }
+
 
 function renderFoodList(searchTerm = '') {
   const allFoods = [...foods, ...state.customFoods];
