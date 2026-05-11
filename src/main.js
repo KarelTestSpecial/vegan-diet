@@ -235,12 +235,6 @@ async function init() {
   renderCustomFoodInputs();
   initCharts();
   setupEventListeners();
-  
-  try {
-    await handleAuthRedirect();
-  } catch (err) {
-    // Silent catch for normal flow
-  }
 
   return new Promise((resolve) => {
     let initialAuthChecked = false;
@@ -569,13 +563,34 @@ function setupEventListeners() {
     }
   });
 
-  selectors.btnGoogleLogin?.addEventListener('click', async () => {
-    const { error } = await loginWithGoogle();
-    if (error) {
-      selectors.authError.textContent = "Google login mislukt: " + error;
-      selectors.authError.classList.remove('hidden');
-    }
-  });
+    selectors.btnGoogleLogin.addEventListener('click', async () => {
+      const { user, error } = await loginWithGoogle();
+      if (error) {
+        selectors.authError.textContent = error;
+        selectors.authError.classList.remove('hidden');
+      } else if (user) {
+        console.log("Login detected, waiting for token sync...");
+        
+        // Kleine vertraging om Firebase de kans te geven tokens intern te verwerken
+        await new Promise(r => setTimeout(r, 500));
+        
+        currentUser = user;
+        selectors.authOverlay.classList.add('hidden');
+        
+        // Forceer UI update
+        if (selectors.profileName) selectors.profileName.textContent = user.email;
+        if (selectors.btnShowLogin) selectors.btnShowLogin.classList.add('hidden');
+        if (selectors.btnLogout) selectors.btnLogout.classList.remove('hidden');
+        
+        // Data laden met verse ID
+        state.customFoods = await getCloudCustomFoods(user.uid);
+        state.log = await getCloudLog(user.uid);
+        renderFoodList(selectors.foodSearch.value);
+        updateUI();
+        
+        console.log("UI updated for:", user.email);
+      }
+    });
 
   selectors.btnShowLogin?.addEventListener('click', () => {
     selectors.authOverlay.classList.remove('hidden');
