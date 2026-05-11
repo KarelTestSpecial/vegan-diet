@@ -7,7 +7,8 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithRedirect,
-  getRedirectResult
+  getRedirectResult,
+  signInWithPopup
 } from 'firebase/auth';
 
 const googleProvider = new GoogleAuthProvider();
@@ -33,10 +34,11 @@ export async function loginUser(email, password) {
 
 export async function loginWithGoogle() {
   try {
-    await signInWithRedirect(auth, googleProvider);
-    return { error: null };
+    const result = await signInWithPopup(auth, googleProvider);
+    return { user: result.user, error: null };
   } catch (error) {
-    return { error: error.message };
+    console.error("Google Popup Error:", error);
+    return { user: null, error: error.message };
   }
 }
 

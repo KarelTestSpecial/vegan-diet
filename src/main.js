@@ -230,59 +230,63 @@ function moveNutrient(key, direction) {
 
 // Initialize app
 async function init() {
-  loadState(); // load local weight and preferences
+  loadState();
   renderNutrientSelection();
   renderCustomFoodInputs();
   initCharts();
   setupEventListeners();
   
-  // Handle Google Redirect Result
-  const redirectRes = await handleAuthRedirect();
-  if (redirectRes.error) {
-    console.error("Redirect login error:", redirectRes.error);
-    selectors.authError.textContent = "Inloggen mislukt: " + redirectRes.error;
-    selectors.authError.classList.remove('hidden');
-    selectors.authOverlay.classList.remove('hidden');
+  try {
+    await handleAuthRedirect();
+  } catch (err) {
+    // Silent catch for normal flow
   }
-  
-  // Initial render (Guest Mode by Default)
-  state.customFoods = await getCloudCustomFoods(null);
-  state.log = await getCloudLog(null);
-  renderFoodList();
-  updateUI();
-  switchView('dashboard');
-  
-  setupAuthListeners(async (user) => {
-    // Logged In
-    currentUser = user;
-    selectors.authOverlay.classList.add('hidden');
-    
-    // Update Profile UI
-    selectors.profileName.textContent = user.email;
-    selectors.btnShowLogin.classList.add('hidden');
-    selectors.btnLogout.classList.remove('hidden');
-    
-    // Fetch data from Cloud
-    state.customFoods = await getCloudCustomFoods(user.uid);
-    state.log = await getCloudLog(user.uid);
-    
-    renderFoodList(selectors.foodSearch.value);
-    updateUI();
-  }, async () => {
-    // Logged Out
-    currentUser = null;
-    
-    // Update Profile UI
-    selectors.profileName.textContent = t('guest');
-    selectors.btnShowLogin.classList.remove('hidden');
-    selectors.btnLogout.classList.add('hidden');
-    
-    // Re-fetch local data if logged out
-    state.customFoods = await getCloudCustomFoods(null);
-    state.log = await getCloudLog(null);
-    
-    renderFoodList(selectors.foodSearch.value);
-    updateUI();
+
+  return new Promise((resolve) => {
+    let initialAuthChecked = false;
+
+    setupAuthListeners(async (user) => {
+      currentUser = user;
+      selectors.authOverlay.classList.add('hidden');
+      
+      if (selectors.profileName) selectors.profileName.textContent = user.email;
+      if (selectors.btnShowLogin) selectors.btnShowLogin.classList.add('hidden');
+      if (selectors.btnLogout) selectors.btnLogout.classList.remove('hidden');
+      
+      try {
+        state.customFoods = await getCloudCustomFoods(user.uid);
+        state.log = await getCloudLog(user.uid);
+      } catch (dbErr) {
+        console.error("Cloud DB Error:", dbErr);
+      }
+      
+      renderFoodList(selectors.foodSearch.value);
+      updateUI();
+      
+      if (!initialAuthChecked) {
+        initialAuthChecked = true;
+        switchView('dashboard');
+        resolve();
+      }
+    }, async () => {
+      currentUser = null;
+      
+      if (selectors.profileName) selectors.profileName.textContent = t('guest');
+      if (selectors.btnShowLogin) selectors.btnShowLogin.classList.remove('hidden');
+      if (selectors.btnLogout) selectors.btnLogout.classList.add('hidden');
+      
+      state.customFoods = await getCloudCustomFoods(null);
+      state.log = await getCloudLog(null);
+      
+      renderFoodList(selectors.foodSearch.value);
+      updateUI();
+      
+      if (!initialAuthChecked) {
+        initialAuthChecked = true;
+        switchView('dashboard');
+        resolve();
+      }
+    });
   });
 }
 
