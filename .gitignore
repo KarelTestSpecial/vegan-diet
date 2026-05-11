@@ -36,3 +36,4 @@ dist-ssr
 .ssh
 .gemini/config
 .clasprc.json
+.firebase/
