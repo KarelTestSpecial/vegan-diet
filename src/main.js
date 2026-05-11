@@ -1,7 +1,7 @@
 import { translations } from './data/translations.js';
 import { analyzeNutrients, RDI, calculateProteinGoal } from './logic/analyzer.js';
 import { getCloudCustomFoods, saveCloudCustomFood, saveCloudCustomFoodsBulk, deleteCloudCustomFood, updateCloudCustomFood, getCloudLog, saveCloudLog } from './logic/db.js';
-import { setupAuthListeners, loginUser, registerUser, logoutUser, resetPassword } from './logic/auth.js';
+import { setupAuthListeners, loginUser, loginWithGoogle, handleAuthRedirect, registerUser, logoutUser, resetPassword } from './logic/auth.js';
 import { parseNutrientText, parseTSVProducts } from './logic/parser.js';
 import { foods } from './data/foods.js';
 import Chart from 'chart.js/auto';
@@ -100,6 +100,7 @@ const selectors = {
   authError: document.getElementById('auth-error'),
   btnLogin: document.getElementById('btn-login'),
   btnRegister: document.getElementById('btn-register'),
+  btnGoogleLogin: document.getElementById('btn-google-login'),
   btnLogout: document.getElementById('btn-logout'),
   btnCloseAuth: document.getElementById('btn-close-auth'),
   btnShowLogin: document.getElementById('btn-show-login'),
@@ -234,6 +235,15 @@ async function init() {
   renderCustomFoodInputs();
   initCharts();
   setupEventListeners();
+  
+  // Handle Google Redirect Result
+  const redirectRes = await handleAuthRedirect();
+  if (redirectRes.error) {
+    console.error("Redirect login error:", redirectRes.error);
+    selectors.authError.textContent = "Inloggen mislukt: " + redirectRes.error;
+    selectors.authError.classList.remove('hidden');
+    selectors.authOverlay.classList.remove('hidden');
+  }
   
   // Initial render (Guest Mode by Default)
   state.customFoods = await getCloudCustomFoods(null);
@@ -535,7 +545,7 @@ function resetEditForm() {
 }
 
 function setupEventListeners() {
-  selectors.btnLogin.addEventListener('click', async () => {
+  selectors.btnLogin?.addEventListener('click', async () => {
     const email = selectors.authEmail.value;
     const password = selectors.authPassword.value;
     const { error } = await loginUser(email, password);
@@ -545,7 +555,7 @@ function setupEventListeners() {
     }
   });
 
-  selectors.btnRegister.addEventListener('click', async () => {
+  selectors.btnRegister?.addEventListener('click', async () => {
     const email = selectors.authEmail.value;
     const password = selectors.authPassword.value;
     const { error } = await registerUser(email, password);
@@ -555,7 +565,15 @@ function setupEventListeners() {
     }
   });
 
-  selectors.btnShowLogin.addEventListener('click', () => {
+  selectors.btnGoogleLogin?.addEventListener('click', async () => {
+    const { error } = await loginWithGoogle();
+    if (error) {
+      selectors.authError.textContent = "Google login mislukt: " + error;
+      selectors.authError.classList.remove('hidden');
+    }
+  });
+
+  selectors.btnShowLogin?.addEventListener('click', () => {
     selectors.authOverlay.classList.remove('hidden');
     // Try to auto-suggest credentials if Credential Management API is available
     if (navigator.credentials && navigator.credentials.get) {
@@ -568,28 +586,30 @@ function setupEventListeners() {
     }
   });
 
-  selectors.btnCloseAuth.addEventListener('click', () => {
+  selectors.btnCloseAuth?.addEventListener('click', () => {
     selectors.authOverlay.classList.add('hidden');
   });
 
-  selectors.btnLogout.addEventListener('click', async () => {
+  selectors.btnLogout?.addEventListener('click', async () => {
     await logoutUser();
   });
 
-  selectors.togglePasswordBtn.addEventListener('click', () => {
+  selectors.togglePasswordBtn?.addEventListener('click', () => {
     const isPassword = selectors.authPassword.type === 'password';
     selectors.authPassword.type = isPassword ? 'text' : 'password';
     const icon = selectors.togglePasswordBtn.querySelector('svg');
-    if (isPassword) {
-      // Eye Off Icon
-      icon.innerHTML = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>';
-    } else {
-      // Eye Icon
-      icon.innerHTML = '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>';
+    if (icon) {
+      if (isPassword) {
+        // Eye Off Icon
+        icon.innerHTML = '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>';
+      } else {
+        // Eye Icon
+        icon.innerHTML = '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>';
+      }
     }
   });
 
-  selectors.btnResetPassword.addEventListener('click', async () => {
+  selectors.btnResetPassword?.addEventListener('click', async () => {
     const email = selectors.authEmail.value;
     if (!email) {
       selectors.authError.textContent = "Vul eerst je e-mailadres in.";
@@ -609,16 +629,16 @@ function setupEventListeners() {
     }
   });
 
-  selectors.navDashboardBtn.addEventListener('click', () => switchView('dashboard'));
-  selectors.navDatabaseBtn.addEventListener('click', () => switchView('database'));
-  selectors.navGuideBtn.addEventListener('click', () => switchView('guide'));
-  selectors.navNutrientsBtn.addEventListener('click', () => switchView('nutrients'));
+  selectors.navDashboardBtn?.addEventListener('click', () => switchView('dashboard'));
+  selectors.navDatabaseBtn?.addEventListener('click', () => switchView('database'));
+  selectors.navGuideBtn?.addEventListener('click', () => switchView('guide'));
+  selectors.navNutrientsBtn?.addEventListener('click', () => switchView('nutrients'));
 
-  selectors.foodSearch.addEventListener('input', (e) => {
+  selectors.foodSearch?.addEventListener('input', (e) => {
     renderFoodList(e.target.value);
   });
 
-  selectors.addSelectedBtn.addEventListener('click', () => {
+  selectors.addSelectedBtn?.addEventListener('click', () => {
     const checkboxes = document.querySelectorAll('.food-checkbox:checked');
     const allFoods = [...foods, ...state.customFoods];
     
@@ -642,18 +662,18 @@ function setupEventListeners() {
     updateUI();
   });
 
-  selectors.weightInput.addEventListener('input', (e) => {
+  selectors.weightInput?.addEventListener('input', (e) => {
     state.weight = parseFloat(e.target.value) || 0;
     saveState();
     updateUI();
   });
 
   // Custom Food Events
-  selectors.tsvToggle.addEventListener('click', () => {
+  selectors.tsvToggle?.addEventListener('click', () => {
     selectors.tsvForm.classList.toggle('hidden');
   });
 
-  selectors.smartParseBtn.addEventListener('click', () => {
+  selectors.smartParseBtn?.addEventListener('click', () => {
     const text = selectors.aiImportText.value;
     if (!text) return;
     const parsed = parseNutrientText(text);
@@ -670,7 +690,7 @@ function setupEventListeners() {
     setTimeout(() => selectors.smartParseBtn.textContent = 'Start Automatische Scan', 1000);
   });
 
-  selectors.saveCustomBtn.addEventListener('click', async () => {
+  selectors.saveCustomBtn?.addEventListener('click', async () => {
     const name = customInputs.name.value;
     if (!name) {
       alert('Geef het product een naam');
@@ -708,7 +728,7 @@ function setupEventListeners() {
     resetEditForm();
   });
 
-  selectors.processTsvBtn.addEventListener('click', async () => {
+  selectors.processTsvBtn?.addEventListener('click', async () => {
     const tsv = selectors.tsvImportText.value;
     if (!tsv) return;
     const products = parseTSVProducts(tsv);

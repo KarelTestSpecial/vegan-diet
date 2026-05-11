@@ -4,8 +4,13 @@ import {
   createUserWithEmailAndPassword, 
   signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth';
+
+const googleProvider = new GoogleAuthProvider();
 
 export function setupAuthListeners(onLogin, onLogout) {
   return onAuthStateChanged(auth, (user) => {
@@ -21,6 +26,30 @@ export async function loginUser(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return { user: userCredential.user, error: null };
+  } catch (error) {
+    return { user: null, error: error.message };
+  }
+}
+
+export async function loginWithGoogle() {
+  try {
+    await signInWithRedirect(auth, googleProvider);
+    return { error: null };
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+/**
+ * Controleert of de gebruiker net terugkomt van een Google Redirect login.
+ */
+export async function handleAuthRedirect() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      return { user: result.user, error: null };
+    }
+    return { user: null, error: null };
   } catch (error) {
     return { user: null, error: error.message };
   }
@@ -51,3 +80,4 @@ export async function logoutUser() {
     console.error("Error logging out:", error);
   }
 }
+
