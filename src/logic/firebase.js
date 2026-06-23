@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
 
 // Gebruik import.meta.env voor Vite environment variables
 const firebaseConfig = {
@@ -16,6 +17,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Authentication and Firestore
+// Initialize Analytics
+export const analytics = getAnalytics(app);
+
+// Initialize Authentication
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Initialize Firestore with Persistent Cache (Offline support & cost reduction)
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+});
+
+
