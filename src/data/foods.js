@@ -630,20 +630,6 @@ export const foods = [
     category: "Fruit"
   },
   {
-    id: "orange-raw",
-    name: "Appelsien",
-    unit: "g",
-    nutrients: { calories: 47, protein: 0.9, iron: 0.1, fiber: 2.4, vitc: 53.2 },
-    category: "Fruit"
-  },
-  {
-    id: "banana-raw",
-    name: "Banaan",
-    unit: "g",
-    nutrients: { calories: 89, protein: 1.1, iron: 0.3, fiber: 2.6, vitc: 8.7, selenium: 1 },
-    category: "Fruit"
-  },
-  {
     id: "supplement-b12",
     name: "B12 Supplement (100μg)",
     unit: "portion",
