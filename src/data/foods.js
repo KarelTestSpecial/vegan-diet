@@ -472,5 +472,196 @@ export const foods = [
       potassium: 2000, phosphorus: 1300, lysine: 3000
     },
     category: 'Supplements'
-  }
+  },
+
+  // --- Geporteerd van main-branch (Belgische/merkproducten, rauwe groenten/fruit, fiber) — 2026-06-23 ---
+  {
+    id: "almond-milk-enriched",
+    name: "Amandelmelk (Enriched)",
+    unit: "ml",
+    nutrients: { calories: 15, protein: 0.5, b12: 0.38, calcium: 120, iron: 0.1 },
+    category: "Drinks"
+  },
+  {
+    id: "tomato-raw",
+    name: "Tomaat (Rauw)",
+    unit: "g",
+    nutrients: { calories: 19, protein: 1, iron: 0.2, calcium: 14, fiber: 1, vitc: 14 },
+    category: "Vegetables"
+  },
+  {
+    id: "cucumber-raw",
+    name: "Komkommer (Rauw)",
+    unit: "g",
+    nutrients: { calories: 14, protein: 0.6, iron: 0.5, calcium: 15, fiber: 0.9 },
+    category: "Vegetables"
+  },
+  {
+    id: "chicory-raw",
+    name: "Witloof (Rauw)",
+    unit: "g",
+    nutrients: { calories: 15, protein: 1.1, iron: 0.6, calcium: 23, fiber: 2.3 },
+    category: "Vegetables"
+  },
+  {
+    id: "whole-wheat-bread",
+    name: "Volkorenbrood",
+    unit: "g",
+    nutrients: { calories: 234, protein: 11.1, iron: 2, calcium: 34, fiber: 6.7 },
+    category: "Grains"
+  },
+  {
+    id: "oatmeal-everyday",
+    name: "Havermout (Everyday/Boni)",
+    unit: "g",
+    nutrients: { calories: 370, protein: 13, iron: 4, zinc: 3, fiber: 10 },
+    category: "Grains"
+  },
+  {
+    id: "chickpeas-boni",
+    name: "Boni Plan't Kikkererwten (Blik)",
+    unit: "g",
+    nutrients: { calories: 120, protein: 7, iron: 2.1, zinc: 1, fiber: 6 },
+    category: "Legumes"
+  },
+  {
+    id: "peas-canned-boni",
+    name: "Boni Erwten (Blik)",
+    unit: "g",
+    nutrients: { calories: 88, protein: 6.5, iron: 1.5, fiber: 5.2 },
+    category: "Legumes"
+  },
+  {
+    id: "white-beans-tomato-everyday",
+    name: "Everyday Witte Bonen in Tomatensaus",
+    unit: "g",
+    nutrients: { calories: 87, protein: 3.7, iron: 1.8, fiber: 4.4 },
+    category: "Legumes"
+  },
+  {
+    id: "tempeh-boni",
+    name: "Boni Plan't Tempeh",
+    unit: "g",
+    nutrients: { calories: 190, protein: 19, calcium: 110, iron: 2.7, zinc: 1.1 },
+    category: "Protein"
+  },
+  {
+    id: "nutritional-yeast",
+    name: "Edelgistvlokken (1 el - 5g)",
+    unit: "portion",
+    nutrients: { calories: 17, protein: 2.5, b12: 2.2, zinc: 1 },
+    category: "Supplements"
+  },
+  {
+    id: "peanut-butter-everyday",
+    name: "Pindakaas (Everyday/Boni)",
+    unit: "g",
+    nutrients: { calories: 600, protein: 25, iron: 2, zinc: 2.5 },
+    category: "Fats"
+  },
+  {
+    id: "broccoli-raw",
+    name: "Broccoli (Rauw)",
+    unit: "g",
+    nutrients: { calories: 34, protein: 2.8, vitc: 89, calcium: 47, iron: 0.7 },
+    category: "Vegetables"
+  },
+  {
+    id: "spinach-raw",
+    name: "Spinazie (Rauw)",
+    unit: "g",
+    nutrients: { calories: 23, protein: 2.9, iron: 2.7, calcium: 99, fiber: 2.2, vitc: 28, vit_k1: 483 },
+    category: "Vegetables"
+  },
+  {
+    id: "red-cabbage-raw",
+    name: "Rodekool (Rauw)",
+    unit: "g",
+    nutrients: { calories: 31, protein: 1.4, iron: 0.8, calcium: 45, fiber: 2.5, vitc: 57, vit_k1: 38 },
+    category: "Vegetables"
+  },
+  {
+    id: "arugula-raw",
+    name: "Rucola (Rauw)",
+    unit: "g",
+    nutrients: { calories: 25, protein: 2.6, iron: 1.5, calcium: 160, fiber: 1.6, vitc: 15, vit_k1: 109 },
+    category: "Vegetables"
+  },
+  {
+    id: "butterhead-lettuce-raw",
+    name: "Kropsla (Rauw)",
+    unit: "g",
+    nutrients: { calories: 13, protein: 1.2, iron: 1.2, calcium: 35, fiber: 1.1, vitc: 10, vit_k1: 126 },
+    category: "Vegetables"
+  },
+  {
+    id: "tahini-boni",
+    name: "Boni Bio Tahin",
+    unit: "g",
+    nutrients: { calories: 600, protein: 18, calcium: 420, iron: 9, zinc: 4.6 },
+    category: "Fats"
+  },
+  {
+    id: "rapeseed-oil-everyday",
+    name: "Koolzaadolie (Everyday/Boni)",
+    unit: "ml",
+    nutrients: { calories: 828, ala: 9100, omega6: 18000 },
+    category: "Fats"
+  },
+  {
+    id: "white-cabbage-grated",
+    name: "Geraspte Witte Kool (Boni)",
+    unit: "g",
+    nutrients: { calories: 25, vitc: 36, fiber: 2.5 },
+    category: "Vegetables"
+  },
+  {
+    id: "apple-syrup-boni",
+    name: "Appelstroop (Boni)",
+    unit: "g",
+    nutrients: { calories: 270, iron: 15 },
+    category: "Supplements"
+  },
+  {
+    id: "apple-raw",
+    name: "Appel (met schil)",
+    unit: "g",
+    nutrients: { calories: 52, protein: 0.3, iron: 0.1, fiber: 2.4, vitc: 4.6 },
+    category: "Fruit"
+  },
+  {
+    id: "orange-raw",
+    name: "Appelsien",
+    unit: "g",
+    nutrients: { calories: 47, protein: 0.9, iron: 0.1, fiber: 2.4, vitc: 53.2 },
+    category: "Fruit"
+  },
+  {
+    id: "banana-raw",
+    name: "Banaan",
+    unit: "g",
+    nutrients: { calories: 89, protein: 1.1, iron: 0.3, fiber: 2.6, vitc: 8.7, selenium: 1 },
+    category: "Fruit"
+  },
+  {
+    id: "supplement-b12",
+    name: "B12 Supplement (100μg)",
+    unit: "portion",
+    nutrients: { b12: 100 },
+    category: "Supplements"
+  },
+  {
+    id: "supplement-k2",
+    name: "K2 Supplement (100μg)",
+    unit: "portion",
+    nutrients: { vit_k2: 100 },
+    category: "Supplements"
+  },
+  {
+    id: "supplement-seleen",
+    name: "Seleen Supplement (50μg)",
+    unit: "portion",
+    nutrients: { selenium: 50 },
+    category: "Supplements"
+  },
 ];

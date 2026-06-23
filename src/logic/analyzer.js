@@ -33,7 +33,9 @@ export const RDI = {
   methionine: 1000,// mg
   copper: 0.9,     // mg
   manganese: 2.3,  // mg
-  omega6_limit: 10 // g (limit for competition)
+  fiber: 30,       // g (geporteerd van main)
+  omega6_limit: 10, // g (limit for competition)
+  selenium_limit: 300 // mcg (EFSA upper limit, geporteerd van main)
 };
 
 export function calculateProteinGoal(weight) {
@@ -113,6 +115,15 @@ export function analyzeNutrients(log, weight) {
     insights.push({
       type: 'danger',
       text: 'Te veel paranoten! Beperk tot maximaal 2 per dag om seleniumvergiftiging te voorkomen.',
+      nutrient: 'selenium'
+    });
+  }
+
+  // Selenium upper limit (geporteerd van main — EFSA-bovengrens)
+  if (totals.selenium > RDI.selenium_limit) {
+    insights.push({
+      type: 'danger',
+      text: `Selenium limiet overschreden (${Math.round(totals.selenium)}mcg). Hoge inname kan leiden tot selenose. Beperk paranoten of supplementen.`,
       nutrient: 'selenium'
     });
   }

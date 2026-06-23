@@ -50,7 +50,8 @@ const NUTRIENT_METADATA = {
   lysine: { unit: 'mg', category: 'Amino' },
   methionine: { unit: 'mg', category: 'Amino' },
   copper: { unit: 'mg', category: 'Mineral' },
-  manganese: { unit: 'mg', category: 'Mineral' }
+  manganese: { unit: 'mg', category: 'Mineral' },
+  fiber: { unit: 'g', category: 'Macro' }
 };
 
 const DEFAULT_TRACKED = ['protein', 'b12', 'ala', 'iron', 'calcium', 'zinc', 'iodine', 'selenium'];
